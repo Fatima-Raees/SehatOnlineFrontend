@@ -1,169 +1,79 @@
-"use client";
-import { useState } from "react";
-import { Box, Typography, Button, Tooltip, Avatar } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
-import DescriptionIcon from "@mui/icons-material/Description";
-import LogoutIcon from "@mui/icons-material/Logout";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount"; // Boss Icon
+import { Activity, DollarSign, Users } from "lucide-react"
 
-const SidebarItems = [
-  { title: "Dashboard", icon: <DashboardIcon /> },
-  { title: "Doctors", icon: <LocalHospitalIcon /> },
-  { title: "Reports", icon: <DescriptionIcon /> },
-];
+import { AdminLayout } from "@/components/layout/admin-layout"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function Dashboard() {
-  const [open, setOpen] = useState(true);
-
+export default function DashboardPage() {
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      {/* Sidebar */}
-      <Box
-        sx={{
-          width: open ? 240 : 100,
-          bgcolor: "#112D4E",
-          color: "white",
-          height: "100vh",
-          transition: "width 0.3s ease",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingTop: 10,
-          gap: 0.5,
-        }}
-      >
-        {/* Sidebar Header */}
-        <Button
-          onClick={() => setOpen(!open)}
-          sx={{
-            color: "black",
-            fontWeight: "bold",
-            fontFamily: "cursive",
-            bgcolor: "white",
-            "&:hover": {
-              bgcolor: "#F9F9F9",
-              transition: "0.3s ease",
-            },
-          }}
-        >
-          ☰ Stay Healthy
-        </Button>
-
-        {/* Profile Card */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            p: 1,
-            width: "100%",
-            paddingTop: 0,
-            borderBottom: "1px solid #ffffff55",
-          }}
-        >
-          <Avatar sx={{ bgcolor: "#F9F9F9", width: 50, height: 50 }}>
-            <SupervisorAccountIcon />
-          </Avatar>
-          {open && (
-            <Typography sx={{ fontWeight: "bold", fontFamily: "cursive" }}>
-              Admin Panel
-            </Typography>
-          )}
-        </Box>
-
-        {/* Sidebar Items */}
-        {SidebarItems.map((item, index) => (
-          <Tooltip title={open ? "" : item.title} placement="right" key={index}>
-            <Button
-              sx={{
-                color: "white",
-                width: "100%",
-                textAlign: "center",
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                paddingTop: "0.4px",
-
-                "&:hover": {
-                  bgcolor: "white",
-                  color: "black",
-                  transition: "0.3s ease",
-                },
-              }}
-            >
-              {item.icon}
-              {open && item.title}
-            </Button>
-          </Tooltip>
-        ))}
-
-        {/* Logout Button */}
-        <Button
-          sx={{
-            color: "white",
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            p: 1.5,
-            "&:hover": {
-              bgcolor: "white",
-              color: "black",
-              transition: "0.3s ease",
-            },
-          }}
-        >
-          <LogoutIcon />
-          {open && "Logout"}
-        </Button>
-      </Box>
-
-      {/* Main Content */}
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <Box sx={{ p: 3 }}>
-          <Typography
-            variant="h4"
-            sx={{ mb: 3, textAlign: "center", fontFamily: "cursive" }}
-          >
-            Welcome to Admin Panel
-          </Typography>
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              width: "70%",
-              margin: "0 auto",
-            }}
-          >
-            {["Stay Healthy, Stay Happy",
-             "Your Health, Our Priority",
-             "Sehat Online, The Ultimate Solution to Your Health Problems",
-              "Prevention is Better than Cure"].map((quote, index) => (
-              <Box
-                key={index}
-                sx={{
-                  height: 200,
-                  bgcolor: "#112D4E",
-                  color: "white",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  p: 2,
-                  width: "100%",
-                  borderRadius: "10px",
-                }}
-              >
-                <Typography variant="h5">{quote}</Typography>
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      </Box>
-    </Box>
-  );
+    <AdminLayout title="Dashboard">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-subheading text-deep-blue">Total Subscribers</CardTitle>
+            <Users className="h-4 w-4 text-bright-blue" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-heading text-dark-blue">1,248</div>
+            <p className="text-xs text-muted-foreground">+12% from last month</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-subheading text-deep-blue">Monthly Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-bright-blue" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-heading text-dark-blue">$24,560</div>
+            <p className="text-xs text-muted-foreground">+8.2% from last month</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-subheading text-deep-blue">Active Users</CardTitle>
+            <Activity className="h-4 w-4 text-bright-blue" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-heading text-dark-blue">892</div>
+            <p className="text-xs text-muted-foreground">+19% from last month</p>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle className="text-deep-blue">Subscription Overview</CardTitle>
+            <CardDescription className="font-subheading">Monthly subscription growth over time</CardDescription>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <div className="h-[300px] w-full bg-soft-blue rounded-md flex items-center justify-center">
+              <p className="text-muted-foreground font-body">Subscription Chart</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle className="text-deep-blue">Recent Subscribers</CardTitle>
+            <CardDescription className="font-subheading">Latest users who subscribed to Sehat Online</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-full bg-soft-blue"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-subheading text-dark-blue">User Name {i}</p>
+                    <p className="text-xs text-muted-foreground font-body">Premium Plan</p>
+                  </div>
+                  <div className="text-xs text-muted-foreground font-body">
+                    {i} day{i !== 1 ? "s" : ""} ago
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </AdminLayout>
+  )
 }
+
