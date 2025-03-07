@@ -18,13 +18,7 @@ export function Header({ title }: { title: string }) {
           <span className="sr-only">Notifications</span>
         </Button>
         <Button variant="ghost" size="icon" className="rounded-full">
-          <Image
-            src="/placeholder.svg?height=32&width=32"
-            width={32}
-            height={32}
-            alt="Avatar"
-            className="rounded-full"
-          />
+          <Image src="/images/AdminAvatar.jpg" width={82} height={52} alt="Avatar" className="rounded-full" />
           <span className="sr-only">Profile</span>
         </Button>
       </div>
