@@ -75,3 +75,24 @@ body {
   background-color: var(--background);
 }
 
+.container.active .sign-up {
+  transform: translateX(0%);
+  opacity: 1;
+  z-index: 5;
+}
+
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
