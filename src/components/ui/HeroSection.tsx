@@ -29,9 +29,15 @@ export default function HeroSection() {
         <div id='Heading' className={`${plot.className} text-white text-7xl py-[2rem]`}>
             <h1>Pain-Free Living <br /> Starts Here</h1>
         </div>
-        <div id="body" className={`${beir.className} text-white text-xl py-[1rem]`}>
+        {/* <div id="body" className={`${beir.className} text-white text-xl py-[1rem]`}>
             <p className='w-[50]'>Whether youér recovering from an injury, managing chronic pain, or seeking to <br /> enhance your overalll mobility, our team is here to guide you every step of the way</p>
-        </div>
+        </div> */}
+        <div id="body" className={`${beir.className} text-white text-xl py-[1rem] max-w-[600px]`}>
+    <p>
+        Whether you’re recovering from an injury, managing chronic pain, or seeking to 
+        enhance your overall mobility, our team is here to guide you every step of the way.
+    </p>
+</div>
       </div>
       {/* <div id="Buttons" className={`${beir.className} text-white mt-[1rem] text-xl`}>
         <button className='cursor-pointer px-[1rem] py-[0.5rem] text-[#023E8A] bg-[#F0F5FA] rounded-full text-3xl font-bold hover:bg-[#023E8A] hover:text-[#F0F5FA] duration-1000'>Login</button>

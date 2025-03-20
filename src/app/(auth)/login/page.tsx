@@ -399,8 +399,8 @@ export default function LoginPage() {
           <span className="text-sm text-gray-600 mt-2">or use your email to login</span>
           <input type="email" placeholder="Email" className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" />
           <input type="password" placeholder="Password" className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" />
-          <Link href="#" className="text-sm text-[#2563EB] mt-2">Forgot Your Password?</Link>
-          <button className="mt-4 bg-[#EAB308] text-white px-6 py-2 rounded-lg hover:bg-[#D19B07]">Sign In</button>
+          <Link href="/forgot-password" className="text-sm text-[#2563EB] mt-2">Forgot Your Password?</Link>
+          <button className="mt-4 bg-[#0077B6] text-white px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#005F91] hover:shadow-lg">Sign In</button>
           <Link href="/signup" className="text-sm text-[#2563EB] mt-2">Don't have an account? Sign Up</Link>
         </div>
 
@@ -415,24 +415,24 @@ export default function LoginPage() {
           <span className="text-sm text-gray-600 mt-2">or use your email to login</span>
           <input type="email" placeholder="Email" className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" />
           <input type="password" placeholder="Password" className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" />
-          <Link href="#" className="text-sm text-[#2563EB] mt-2">Forgot Your Password?</Link>
-          <button className="mt-4 bg-[#EAB308] text-white px-6 py-2 rounded-lg hover:bg-[#D19B07]">Sign In</button>
+          <Link href="/forgot-password" className="text-sm text-[#2563EB] mt-2">Forgot Your Password?</Link>
+          <button className="mt-4 bg-[#0077B6] text-white px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#005F91] hover:shadow-lg">Sign In</button>
           <Link href="/signup" className="text-sm text-[#2563EB] mt-2">Don't have an account? Sign Up</Link>
         </div>
 
         {/* Golden Panel with Toggle */}
-        <div className={`absolute top-0 left-1/2 h-full w-1/2 bg-[#0A192F] text-white flex flex-col items-center justify-center transition-all duration-500 ease-in-out ${isDoctor ? "-translate-x-full" : "translate-x-0"}`}>
+        <div className={`absolute top-0 left-1/2 h-full w-1/2 bg-[#023E8A] text-white flex flex-col items-center justify-center transition-all duration-500 ease-in-out ${isDoctor ? "-translate-x-full" : "translate-x-0"}`}>
           {isDoctor ? (
             <>
               <h1 className="text-2xl font-semibold">Looking for Patient Login?</h1>
               <p className="text-center px-6 mt-2">Login as a patient to access healthcare services.</p>
-              <button onClick={() => setIsDoctor(false)} className="mt-4 border-white border px-6 py-2 rounded-lg bg-[#EAB308] hover:bg-[#D19B07]">Patient Login</button>
+              <button onClick={() => setIsDoctor(false)} className="mt-4 border-white border px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#0077B6] hover:text-white hover:border-[#0077B6]">Patient Login</button>
             </>
           ) : (
             <>
               <h1 className="text-2xl font-semibold">Looking for Doctor Login?</h1>
               <p className="text-center px-6 mt-2">Login as a doctor to manage your patients.</p>
-              <button onClick={() => setIsDoctor(true)} className="mt-4 border-white border px-6 py-2 rounded-lg bg-[#EAB308] hover:bg-[#D19B07]">Doctor Login</button>
+              <button onClick={() => setIsDoctor(true)} className="mt-4 border-white border px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#0077B6] hover:text-white hover:border-[#0077B6]">Doctor Login</button>
             </>
           )}
         </div>

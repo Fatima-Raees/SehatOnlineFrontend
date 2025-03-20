@@ -655,7 +655,7 @@ export default function SignupPage() {
           <input type="text" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
           <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
           <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
-          <button type="submit" className="mt-4 bg-[#EAB308] text-white px-6 py-2 rounded-lg hover:bg-[#D19B07]">Sign Up</button>
+          <button type="submit" className="mt-4 bg-[#0077B6] text-white px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#005F91] hover:shadow-lg">Sign Up</button>
           <Link href="/login" className="text-sm text-[#2563EB] mt-2">Already have an account? Login</Link>
         </form>
 
@@ -691,7 +691,14 @@ export default function SignupPage() {
           <input type="text" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
           <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
           <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
-          <button type="submit" className="mt-4 bg-[#EAB308] text-white px-6 py-2 rounded-lg hover:bg-[#D19B07]">Sign Up</button>
+          {/* <button type="submit" className="mt-4 bg-[#EAB308] text-white px-6 py-2 rounded-lg hover:bg-[#D19B07]">Sign Up</button> */}
+          <button 
+  type="submit" 
+  className="mt-4 bg-[#0077B6] text-white px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#005F91] hover:shadow-lg"
+>
+  Sign Up
+</button>
+
           <Link href="/login" className="text-sm text-[#2563EB] mt-2">Already have an account? Login</Link>
         </form>
 
@@ -711,18 +718,26 @@ export default function SignupPage() {
             </>
           )}
         </div> */}
-        <div className={`absolute top-0 left-1/2 h-full w-1/2 bg-[#0A192F] text-white flex flex-col items-center justify-center transition-all duration-500 ${isDoctor ? "-translate-x-full" : ""}`}>
+        <div className={`absolute top-0 left-1/2 h-full w-1/2 bg-[#023E8A] text-white flex flex-col items-center justify-center transition-all duration-500 ${isDoctor ? "-translate-x-full" : ""}`}>
           {isDoctor ? (
             <>
               <h1 className="text-2xl font-semibold">Looking for Patient Sign Up?</h1>
               <p className="text-center px-6 mt-2">Register as a patient to access our healthcare services.</p>
-              <button onClick={() => setIsDoctor(false)} className="mt-4 border-white border px-6 py-2 rounded-lg bg-[#EAB308] hover:bg-[#D19B07]">Patient Sign Up</button>
+              <button onClick={() => setIsDoctor(false)} className="mt-4 border-white border px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#0077B6] hover:text-white hover:border-[#0077B6]">Patient Sign Up</button>
+              
             </>
           ) : (
             <>
               <h1 className="text-2xl font-semibold">Looking for Doctor Sign Up?</h1>
               <p className="text-center px-6 mt-2">Register as a doctor to provide quality medical services.</p>
-              <button onClick={() => setIsDoctor(true)} className="mt-4 border-white border px-6 py-2 rounded-lg bg-[#EAB308] hover:bg-[#D19B07]">Doctor Sign Up</button>
+              {/* <button onClick={() => setIsDoctor(true)} className="mt-4 border-white border px-6 py-2 rounded-lg  hover:bg-[#ffffff] ">Doctor Sign Up</button> */}
+              <button 
+  onClick={() => setIsDoctor(true)} 
+  className="mt-4 border-white border px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#0077B6] hover:text-white hover:border-[#0077B6]"
+>
+  Doctor Sign Up
+</button>
+
             </>
           )}
         </div>
