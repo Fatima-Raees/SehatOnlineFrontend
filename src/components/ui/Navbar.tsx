@@ -9,7 +9,7 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
         {/* Logo / Site Name */}
         <Link href="/" className="text-2xl font-bold text-blue-600">
-        <Image src="/logo/Asset 2.svg" alt="logo" width={100} height={80} />   
+        <Image src="/logo/Asset 8.jpg" alt="logo" width={70} height={70} />   
         </Link>
 
         {/* Navigation Links (Commented for Later Use) */}

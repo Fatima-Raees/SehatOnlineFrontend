@@ -38,11 +38,11 @@ export default function ServicesSection() {
         </div>
 
         {/* Button */}
-        <Link href="/services">
+        {/* <Link href="/services">
   <button className="mt-8 px-6 py-3 bg-[#0077B6] text-white font-medium rounded-lg shadow-md hover:bg-[#005f8d] transition">
     View All Services
   </button>
-</Link>
+</Link> */}
       </div>
     </section>
   );
