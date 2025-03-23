@@ -2,45 +2,48 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
+import Image from "next/image";
 const Navbar = () => {
   return (
     <nav className="bg-white shadow-md">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
         {/* Logo / Site Name */}
         <Link href="/" className="text-2xl font-bold text-blue-600">
-          SehatOnline
+        <Image src="/logo/Asset 8.jpg" alt="logo" width={70} height={70} />   
         </Link>
 
         {/* Navigation Links (Commented for Later Use) */}
-        {/* <div className="hidden md:flex space-x-6">
-          <Link href="#" className="text-gray-700 hover:text-blue-600">
-            Doctors
+        <div className="hidden md:flex space-x-6">
+          <Link href="/" className="text-gray-700 hover:text-blue-600">
+            Home
           </Link>
           <Link href="#" className="text-gray-700 hover:text-blue-600">
-            Hospitals
+            Services
           </Link>
           <Link href="#" className="text-gray-700 hover:text-blue-600">
-            Labs & Diagnostics
+            Blog
           </Link>
-          <Link href="#" className="text-gray-700 hover:text-blue-600">
-            Surgeries
+          <Link href="/about-us" className="text-gray-700 hover:text-blue-600">
+            About Us
           </Link>
           <Link href="#" className="text-gray-700 hover:text-blue-600">
             Health Blog
           </Link>
-        </div> */}
+        </div>
 
         {/* Login / Signup Combined */}
         <div className="space-x-4 flex items-center">
           <Button variant="outline">
-            <Link href="/patient/login">Login</Link> / <Link href="/patient/signup">Sign Up</Link>
+            <Link href="/login">Login</Link> / <Link href="/signup">Sign Up</Link>
           </Button>
-          <Button variant="default">
+          {/* <Button variant="default">
             <Link href="/doctor/signup">Join as Doctor</Link>
-          </Button>
+          </Button> */}
         </div>
       </div>
+
+
+
     </nav>
   );
 };
