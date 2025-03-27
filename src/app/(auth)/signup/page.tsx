@@ -9,14 +9,7 @@ import Link from "next/link";
 
 export default function SignupPage() {
   const router = useRouter();
-  // const [isDoctor, setIsDoctor] = useState(false);
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   CNIC: "",
-  //   phone: "",
-  //   email: "",
-  //   password: "",
-  // });
+  
 
   const [isDoctor, setIsDoctor] = useState(false); // Used in UI toggle
   const [formData, setFormData] = useState({
@@ -65,10 +58,12 @@ export default function SignupPage() {
     setLoading(true);
     setErrors({});
     // Set the role based on isDoctor
+    console.log(isDoctor);
     const updatedFormData = { ...formData, role: isDoctor ? "Doctor" : "Patient" };
-    console.log("Form submitted", updatedFormData);
+    console.log("UpdatedForm submitted", updatedFormData);
     try {
-      await signupUser(formData);
+      await signupUser(updatedFormData);
+      console.log(updatedFormData);
       alert("Registration successful!");
       router.push("/login");
     } catch (error: any) {
@@ -84,6 +79,7 @@ export default function SignupPage() {
       <div className="relative w-[768px] min-h-[640px] bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Patient Sign Up Form */}
         <form
+        
           onSubmit={handleSubmit}
           className={`absolute top-0 left-0 h-full w-1/2 p-10 flex flex-col items-center justify-center transition-all duration-500 ${isDoctor ? "pointer-events-none -translate-x-full opacity-0" : "pointer-events-auto opacity-100"
             }`}
@@ -132,7 +128,7 @@ export default function SignupPage() {
           <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
           {errors.email && <p className="text-red-500">{errors.email[0]}</p>}
           <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
-          <input type="hidden" name="role" value="Doctor" onChange={handleChange} />
+          {/* <input type="hidden" name="role" value="Doctor" onChange={handleChange} /> */}
           
           {/* Registration Number */}
           <input

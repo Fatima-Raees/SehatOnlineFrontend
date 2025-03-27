@@ -52,7 +52,7 @@ export const signupUser = async (userData: any) => {
       CNIC: userData.CNIC,
       password: userData.password,
       phoneNumber: userData.phone, // Map 'phone' to 'phoneNumber'
-      role: userData.role || "Patient",
+      role: userData.role,
       authMethodType: userData.AuthMethod || 'local',
     };
     

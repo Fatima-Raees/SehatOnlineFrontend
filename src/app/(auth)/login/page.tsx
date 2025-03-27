@@ -17,16 +17,15 @@ export default function LoginPage() {
     try {
       setError(""); // Reset previous errors
       const response = await loginUser(email, password);
-      console.log(response.success);
+
       if (response.success) {
-        // Handle different possible token locations in the response
         const token = response.data || response.token || response;
-        localStorage.setItem("token", token); // Store token
+        sessionStorage.setItem("token", token); // ✅ Store token in sessionStorage
         alert("Login successful!");
-        // Redirect user (update path as needed)
+
+        
         window.location.href = isDoctor ? "/doctor-dashboard" : "/patient-dashboard";
-      } 
-      else {
+      } else {
         setError(response?.Message || "Login failed. Please try again.");
       }
     } catch (err) {
@@ -36,8 +35,9 @@ export default function LoginPage() {
   };
 
   return (
-    <><TestAPIConnection /><div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen">
       <div className="relative w-[768px] min-h-[480px] bg-white rounded-2xl shadow-lg overflow-hidden">
+        
         {/* Patient Login Form */}
         <div className={`absolute top-0 left-0 h-full w-1/2 p-10 flex flex-col items-center justify-center transition-all duration-500 ease-in-out ${isDoctor ? "opacity-0 -translate-x-full pointer-events-none" : "opacity-100 translate-x-0 pointer-events-auto"}`}>
           <h1 className="text-2xl font-semibold text-[#0A192F]">Patient Login</h1>
@@ -70,7 +70,7 @@ export default function LoginPage() {
           <Link href="/signup" className="text-sm text-[#2563EB] mt-2">Don't have an account? Sign Up</Link>
         </div>
 
-        {/* Golden Panel with Toggle */}
+        {/* Toggle Panel */}
         <div className={`absolute top-0 left-1/2 h-full w-1/2 bg-[#023E8A] text-white flex flex-col items-center justify-center transition-all duration-500 ease-in-out ${isDoctor ? "-translate-x-full" : "translate-x-0"}`}>
           {isDoctor ? (
             <>
@@ -87,6 +87,6 @@ export default function LoginPage() {
           )}
         </div>
       </div>
-    </div></>
+    </div>
   );
 }
