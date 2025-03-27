@@ -33,33 +33,37 @@ export const getAllDoctorSpecializations = async () => {
 interface RegisterDto {
   name: string; // Required, max length 50
   email: string; // Required, valid email format, max length 100
-  cnic: string; // Required, must be 13 digits
+  CNIC: string; // Required, must be 13 digits
   password: string; // Required, max length 100
   phoneNumber: string; // Required, must be 11 digits
-  roleId: number; // Required, lookup reference
+  role: string; // Required, lookup reference
   specialty?: number; // Optional, only required for doctors
   doctorRegistrationNumber?: string; // Optional, must match format "Number-Alphabet"
   authMethodType: string; // Required, FK to AuthMethod Lookup
 }
 
-export const signupUser = async (userData: RegisterDto) => {
+export const signupUser = async (userData: any) => {
   console.log(userData);
   try {
-    const response = await fetch(`${api_base_url}/Person/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw responseData; // Throw validation errors if API returns 400 Bad Request
+    // Transform the input data to match the expected API format
+    const registerData: RegisterDto = {
+      name: userData.name,
+      email: userData.email,
+      CNIC: userData.CNIC,
+      password: userData.password,
+      phoneNumber: userData.phone, // Map 'phone' to 'phoneNumber'
+      role: userData.role || "Patient",
+      authMethodType: userData.AuthMethod || 'local',
+    };
+    
+    // Add optional doctor fields if applicable
+    if (userData.role === 'Doctor') {
+      registerData.specialty = userData.specialization ? Number(userData.specialization) : undefined;
+      registerData.doctorRegistrationNumber = userData.registrationNumber || undefined;
     }
-
-    return responseData; // Return success response
+    
+    const response = await axios.post(`${api_base_url}/Person/register`, registerData);
+    return response.data;
   } catch (error) {
     console.error("Signup error:", error);
     throw error; // Re-throw error to be handled in the component

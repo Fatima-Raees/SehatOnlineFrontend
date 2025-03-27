@@ -132,7 +132,8 @@ export default function SignupPage() {
           <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
           {errors.email && <p className="text-red-500">{errors.email[0]}</p>}
           <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" required />
-          {/* <input type="hidden" name="role" value="Doctor" onChange={handleChange} /> */}
+          <input type="hidden" name="role" value="Doctor" onChange={handleChange} />
+          
           {/* Registration Number */}
           <input
             type="text"

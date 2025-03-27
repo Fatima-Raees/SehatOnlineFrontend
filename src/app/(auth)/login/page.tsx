@@ -18,8 +18,10 @@ export default function LoginPage() {
       setError(""); // Reset previous errors
       const response = await loginUser(email, password);
       console.log(response.success);
-      if (!response.success) {
-        localStorage.setItem("token", response.Data.Token); // Store token
+      if (response.success) {
+        // Handle different possible token locations in the response
+        const token = response.data || response.token || response;
+        localStorage.setItem("token", token); // Store token
         alert("Login successful!");
         // Redirect user (update path as needed)
         window.location.href = isDoctor ? "/doctor-dashboard" : "/patient-dashboard";
@@ -28,6 +30,7 @@ export default function LoginPage() {
         setError(response?.Message || "Login failed. Please try again.");
       }
     } catch (err) {
+      console.log(err);
       setError("Invalid email or password.");
     }
   };
