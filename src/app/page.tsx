@@ -4,13 +4,16 @@ import Choose from "./pages/choose";
 import ServicesSection from "@/components/ui/landing-page/medical-services";
 import MedicalServices from "@/components/ui/landing-page/three-step-service";
 import HeroDoctor from "@/components/ui/landing-page/hero-doctor";
+import DoctorsSection from "@/components/ui/landing-page/DoctorsSection";
+
 
 export default function Home() {
   return (
     <div className="overflow-hidden">
       <HomePage />
       <MedicalServices/>
-      <HeroDoctor/>   
+      <DoctorsSection />
+      {/* <HeroDoctor/>    */}
       {/* <Choose /> */}
       <ServicesSection />
       <Testimonials />
