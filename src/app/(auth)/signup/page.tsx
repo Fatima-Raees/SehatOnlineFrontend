@@ -39,7 +39,7 @@ export default function SignupPage() {
           lookupID: spec.lookupID,
           value: spec.value,
         }));
-        console.log("formatted response", formattedSpecializations);
+        //console.log("formatted response", formattedSpecializations);
         setSpecializations(formattedSpecializations);
       } catch (error) {
         console.error("Failed to fetch specializations:", error);
@@ -58,9 +58,7 @@ export default function SignupPage() {
     setLoading(true);
     setErrors({});
     // Set the role based on isDoctor
-    console.log(isDoctor);
     const updatedFormData = { ...formData, role: isDoctor ? "Doctor" : "Patient" };
-    console.log("UpdatedForm submitted", updatedFormData);
     try {
       await signupUser(updatedFormData);
       console.log(updatedFormData);
