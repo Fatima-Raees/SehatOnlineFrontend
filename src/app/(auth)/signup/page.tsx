@@ -25,7 +25,7 @@ const [formData, setFormData] = useState({
   registrationNumber: "", // New field for doctors
   specialization: "", // New field for specialization dropdown
 });
-  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
