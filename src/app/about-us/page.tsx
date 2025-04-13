@@ -7,7 +7,7 @@ import FacilitiesSection from "@/components/ui/FacilitiesSection";
 const AboutUs: React.FC = () => {
   return (
     <>
-    <section className="relative bg-blue-600 text-white py-20 flex flex-col items-center text-center">
+    <section className="relative bg-[#3A78C2] text-white py-20 flex flex-col items-center text-center">
       {/* Background with subtle pattern */}
       <div className="absolute inset-0 bg-[url('/path-to-your-background-image.png')] bg-cover bg-center opacity-20"></div>
 

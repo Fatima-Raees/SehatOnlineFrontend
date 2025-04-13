@@ -1,6 +1,6 @@
 import { Activity, DollarSign, Users } from "lucide-react"
 
-import { AdminLayout } from "@/components/layout/admin-layout"
+import AdminLayout from "@/components/Navbars/adminNavbar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function DashboardPage() {
