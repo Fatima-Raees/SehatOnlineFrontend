@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-const Navbar = () => {
+const DoctorNavbar = () => {
   return (
     <nav className="bg-white shadow-md">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
@@ -26,9 +26,7 @@ const Navbar = () => {
           <Link href="/about-us" className="text-gray-700 hover:text-blue-600">
             About Us
           </Link>
-          <Link href="#" className="text-gray-700 hover:text-blue-600">
-            Health Blog
-          </Link>
+         
         </div>
 
         {/* Login / Signup Combined */}
@@ -48,4 +46,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default DoctorNavbar;
