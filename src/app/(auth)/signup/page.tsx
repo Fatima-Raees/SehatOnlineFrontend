@@ -93,7 +93,7 @@ export default function SignupPage() {
 
       Cookies.set("tempUserData", JSON.stringify(updatedFormData));
       Cookies.set("userEmail", updatedFormData.email);
-  
+      Cookies.set("otpFlow", "signup");
       
       await sendOTP(updatedFormData.email);
       alert("OTP has been sent");

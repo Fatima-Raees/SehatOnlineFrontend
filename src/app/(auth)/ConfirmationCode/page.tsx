@@ -45,20 +45,34 @@ export default function OTPVerification() {
     try {
       const response = await verifyOTP(email, otp);
       if (response.success) {
-        const tempUserData = Cookies.get("tempUserData");
-        if (tempUserData) {
-          const parsedData = JSON.parse(tempUserData);
-          await signupUser(parsedData); // Now store in DB
-          Cookies.remove("tempUserData");
-          alert("Registration successful!");
-          router.push("/login");
-        } else {
-          setError("No temporary data found. Please register again.");
+        const flow = Cookies.get("flow");
+        const userRole = Cookies.get("role")
+        if(flow === "signup"){
+          const tempUserData = Cookies.get("tempUserData");
+          if (tempUserData) {
+            const parsedData = JSON.parse(tempUserData);
+            await signupUser(parsedData); 
+            Cookies.remove("tempUserData");
+            alert("Registration successful!");
         }
+        
+      } else if (flow === "login") {
+        
+        if (userRole === "doctor") {
+          window.location.href = "/Doctor/dashboard";
+        } else if (userRole === "admin") {
+          window.location.href = "/Admin/dashboard";
+        } else if (userRole === "patient") {
+          window.location.href = "/Patient/dashboard";
+        }
+      }
+        
+       
       } else {
         setError(response.message || "Verification failed");
       }
-    } catch (err) {
+    } 
+    catch (err) {
       setError("An error occurred. Please try again.");
     } finally {
       setLoading(false);

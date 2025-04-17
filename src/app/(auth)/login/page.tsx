@@ -1,14 +1,16 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import Link from "next/link";
-import { loginUser } from "../../../APIServices/users/usersAPI";
+import { loginUser ,sendOTP} from "../../../APIServices/users/usersAPI";
 import Cookies from "js-cookie";
 export default function LoginPage() {
   const [isDoctor, setIsDoctor] = useState(false);
   const [email, setEmail] = useState("");
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -26,15 +28,15 @@ export default function LoginPage() {
         Cookies.set("role", userRole, { expires: 1 });
         Cookies.set("PersonID", PersonID, { expires: 1 });
         Cookies.set("loggedIn", "true", { expires: 1 });
-        alert("Login successful!");
-
-        if (userRole === "doctor") {
-          window.location.href = "/Doctor/dashboard";
-        } else if (userRole === "admin") {
-          window.location.href = "/Admin/dashboard";
-        } else if (userRole === "patient") {
-          window.location.href = "/Patient/dashboard";
+        Cookies.set("Email", email, { expires: 1 });
+        if(email !=null){
+          sendOTP(email)
+          await sendOTP(email);
+          alert("OTP has been sent");
+          router.push("/ConfirmationCode");
         }
+       
+
       } else {
         setError(response.data?.message || "Login failed. Please try again.");
       }
