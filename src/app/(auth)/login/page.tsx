@@ -30,15 +30,22 @@ export default function LoginPage() {
         Cookies.set("loggedIn", "true", { expires: 1 });
         Cookies.set("Email", email, { expires: 1 });
         if(email !=null){
-          sendOTP(email)
-          await sendOTP(email);
-          alert("OTP has been sent");
-          router.push("/ConfirmationCode");
+         // sendOTP(email)
+          //await sendOTP(email);
+          //alert("OTP has been sent");
+          //router.push("/ConfirmationCode");
+          if (userRole === "doctor") {
+            window.location.href = "/Doctor/dashboard";
+          } else if (userRole === "admin") {
+            window.location.href = "/Admin/dashboard";
+          } else if (userRole === "patient") {
+            window.location.href = "/Patient/dashboard";
+          }
         }
        
 
       } else {
-        setError(response.data?.message || "Login failed. Please try again.");
+        setError(response.data?.message || "InValid UserName or Password");
       }
     } catch (err) {
       console.log(err);

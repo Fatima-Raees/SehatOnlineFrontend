@@ -36,6 +36,38 @@ export const sendOTP = async (email: string) => {
   }
 };
 
+export const validateRegistration = async (registrationNumber: string, fullName: string) => {
+  try {
+    const response = await axios.post(`${api_base_url}/Person/validate-registration`, {
+      registrationNumber,
+      fullName,
+    }, { withCredentials: true });
+
+    console.log(response.data);
+
+    // Check if the response indicates success
+    if (!response.data.success) {
+      return {
+        success: false,
+        message: response.data.message || "Registration number is invalid or doesn't match your name",
+        data: null
+      };
+    }
+
+    return {
+      success: true,
+      message: "Registration validated successfully",
+      data: { isValid: response.data.isValid }
+    };
+  } catch (error: any) {
+    console.error("Error validating registration:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to validate registration. Please try again.",
+      data: null
+    };
+  }
+};
 export const verifyOTP = async (email: string, otp: string) => {
   try {
     const response = await axios.post(`${api_base_url}/Person/verify-otp`, {
