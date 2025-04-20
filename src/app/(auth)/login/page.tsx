@@ -5,8 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import Link from "next/link";
 import { loginUser } from "../../../APIServices/users/usersAPI";
-import TestAPIConnection from "@/Testing/usertestAPI";
-
+import Cookies from "js-cookie";
 export default function LoginPage() {
   const [isDoctor, setIsDoctor] = useState(false);
   const [email, setEmail] = useState("");
@@ -15,18 +14,29 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      setError(""); // Reset previous errors
+      setError("");
+
       const response = await loginUser(email, password);
 
-      if (response.success) {
-        const token = response.data || response.token || response;
-        sessionStorage.setItem("token", token); // ✅ Store token in sessionStorage
+      if (response.data.success) {
+        const token = response.data.token || response.data?.token;
+        const userRole = response.data.role || "patient"; 
+        const PersonID= response.data.PersonID || response.data?.PersonID;
+        Cookies.set("token", token, { expires: 1 }); 
+        Cookies.set("role", userRole, { expires: 1 });
+        Cookies.set("PersonID", PersonID, { expires: 1 });
+        Cookies.set("loggedIn", "true", { expires: 1 });
         alert("Login successful!");
 
-        
-        window.location.href = isDoctor ? "/doctor-dashboard" : "/patient-dashboard";
+        if (userRole === "doctor") {
+          window.location.href = "/Doctor/dashboard";
+        } else if (userRole === "admin") {
+          window.location.href = "/Admin/dashboard";
+        } else if (userRole === "patient") {
+          window.location.href = "/Patient/dashboard";
+        }
       } else {
-        setError(response?.Message || "Login failed. Please try again.");
+        setError(response.data?.message || "Login failed. Please try again.");
       }
     } catch (err) {
       console.log(err);

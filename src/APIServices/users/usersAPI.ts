@@ -15,6 +15,47 @@ export const loginUser = async (email: string, password: string) => {
   }
 };
 
+export const sendOTP = async (email: string) => {
+  try {
+    const response = await axios.post(`${api_base_url}/Person/send-otp`, {
+      email,
+    },{withCredentials: true});
+    console.log(response.data);
+    return {
+      success: true,
+      message: "OTP sent successfully",
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    return {
+      success: false,
+      message: "Failed to send OTP",
+      data: null
+    };
+  }
+};
+
+export const verifyOTP = async (email: string, otp: string) => {
+  try {
+    const response = await axios.post(`${api_base_url}/Person/verify-otp`, {
+      email,
+      otp,
+    },{withCredentials: true});
+
+    return {
+      success: true,
+      message: response.data, 
+    };
+  } catch (error: any) {
+    const errorMsg =
+      error?.response?.data || "Failed to verify OTP. Please try again.";
+    return {
+      success: false,
+      message: errorMsg,
+    };
+  }
+};
 
 export const getAllDoctorSpecializations = async () => {
     try {
@@ -30,6 +71,33 @@ export const getAllDoctorSpecializations = async () => {
         };
     }
 };
+export const checkDuplicate = async (email: string, cnic: string) => {
+  try {
+      const response = await axios.post(`${api_base_url}/Person/checkduplicate`, {
+          email,
+          cnic
+      });
+      return response.data; // { success: true, message: "Email and CNIC are unique." }
+  } catch (error: any) {
+      console.error("Error checking duplicates:", error);
+      return {
+          success: false,
+          message: "Failed to check duplicates",
+          errors: error.response?.data?.errors || null
+      };
+  }
+};
+interface RegisterDto {
+  name: string; // Required, max length 50
+  email: string; // Required, valid email format, max length 100
+  CNIC: string; // Required, must be 13 digits
+  password: string; // Required, max length 100
+  phoneNumber: string; // Required, must be 11 digits
+  role: string; // Required, lookup reference
+  specialty?: number; // Optional, only required for doctors
+  doctorRegistrationNumber?: string; // Optional, must match format "Number-Alphabet"
+  authMethodType: string; // Required, FK to AuthMethod Lookup
+}
 
 export const signupUser = async (userData: any) => {
   console.log(userData);
