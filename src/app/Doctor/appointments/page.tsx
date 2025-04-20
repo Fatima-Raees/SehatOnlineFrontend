@@ -1,4 +1,3 @@
-
 "use client"
 
 import { JSX, useState } from "react"
@@ -115,7 +114,7 @@ export default function AppointmentsPage() {
   })
 
   return (
-    <div className="container py-10 max-w-7xl mx-auto">
+    <div className="container py-10 max-w-[1520px] mx-auto">
       <div className="flex flex-col gap-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Appointments</h1>
@@ -124,10 +123,10 @@ export default function AppointmentsPage() {
 
         <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4 max-w-md">
-            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="confirmed">Today</TabsTrigger>
             <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="all">All</TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-6">
@@ -182,7 +181,7 @@ function AppointmentCard({ appointment }: { appointment: Appointment }) {
   const badgeDetails = getBadgeDetails(appointment.status)
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden ">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
@@ -236,7 +235,7 @@ function AppointmentCard({ appointment }: { appointment: Appointment }) {
       </CardContent>
 
       {/* Conditionally render buttons based on appointment status */}
-      {appointment.status !== "completed" && (
+      {/* {appointment.status !== "completed" && (
         <CardFooter className="border-t pt-4 flex justify-between">
           <Button variant="destructive" size="sm">
             Cancel
@@ -247,7 +246,28 @@ function AppointmentCard({ appointment }: { appointment: Appointment }) {
             </Button>
           )}
         </CardFooter>
-      )}
+      )} */}
+      {appointment.status !== "completed" && (
+  <CardFooter className="border-t pt-4 flex justify-between">
+    {appointment.status === "pending" && (
+      <>
+        <Button variant="destructive" size="sm">
+          Cancel
+        </Button>
+        <Button variant="default" size="sm">
+          Confirm
+        </Button>
+      </>
+    )}
+
+    {appointment.status === "confirmed" && (
+      <Button variant="default" size="sm">
+        Detail
+      </Button>
+    )}
+  </CardFooter>
+)}
+
     </Card>
   )
 }
