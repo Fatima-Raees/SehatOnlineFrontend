@@ -43,10 +43,10 @@ export default function AppointmentsPage() {
        
         return await getAppointmentsByDoctor({ PersonId: parsedPersonId });
       }
-      
+      console.log(activeTab)
       return await getAppointmentsByStatusAndDoctor({
         PersonId: parsedPersonId,
-        Status: activeTab,
+        status: activeTab,
       });
     },
     staleTime: 0, // 💡 this ensures the data is cleared on tab switch
@@ -81,10 +81,12 @@ export default function AppointmentsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
               
               {appointments.map((appointment) => {
-  console.log("Appointment:", appointment.id); // Logs each ID
+  console.log(appointment);
   return (
     <AppointmentCard
       key={appointment.id}
+      
+      
       appointment={appointment}
       onConfirm={() => confirmMutation.mutate(appointment.id)}
       onCancel={() => cancelMutation.mutate(appointment.id)}
@@ -106,6 +108,7 @@ export default function AppointmentsPage() {
 
 interface AppointmentCardProps {
   appointment: AppointmentDTO;
+  
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -122,21 +125,23 @@ function AppointmentCard({ appointment, onConfirm, onCancel }: AppointmentCardPr
     return statusMappings[normalizedStatus] || { variant: "outline", icon: <Clock className="h-3 w-3 mr-1" /> };
   };
 
-  const badgeDetails = getBadgeDetails(appointment.Status);
-  const parsedDate = new Date(appointment.Date);
+  const badgeDetails = getBadgeDetails(appointment.status);
+  const parsedDate = new Date(appointment.date);
   const formattedDate = !isNaN(parsedDate.getTime())
     ? parsedDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     : "Invalid Date";
-  const formattedTime = appointment.Time || "Unknown";
+  const formattedTime = appointment.time || "Unknown";
 
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between">
-          <CardTitle className="text-lg">{appointment.PatientName || "Unknown"}</CardTitle>
+          <CardTitle className="text-lg">{appointment.patientName || "Unknown"}</CardTitle>
           <Badge variant={badgeDetails.variant}>
             {badgeDetails.icon}
-            {appointment.Status ? appointment.Status.charAt(0).toUpperCase() + appointment.Status.slice(1).toLowerCase() : "Unknown"}
+            
+            
+            {appointment.status ? appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1).toLowerCase() : "Unknown"}
           </Badge>
         </div>
       </CardHeader>
@@ -150,16 +155,16 @@ function AppointmentCard({ appointment, onConfirm, onCancel }: AppointmentCardPr
             <Clock className="h-4 w-4 text-gray-500" />
             <span className="text-sm">{formattedTime}</span>
           </div>
-          {appointment.Notes && (
+          {appointment.notes && (
             <p className="text-sm text-gray-500">
-              <span className="font-medium">Notes:</span> {appointment.Notes}
+              <span className="font-medium">Notes:</span> {appointment.notes}
             </p>
           )}
         </div>
       </CardContent>
-      {appointment.Status && !["completed", "cancelled"].includes(appointment.Status.toLowerCase()) && (
+      {appointment.status && !["completed", "cancelled"].includes(appointment.status.toLowerCase()) && (
         <CardFooter className="border-t pt-4">
-          {appointment.Status.toLowerCase() === "pending" ? (
+          {appointment.status.toLowerCase() === "pending" ? (
             <div className="flex gap-2 w-full">
               <Button variant="destructive" size="sm" onClick={onCancel} className="flex-1">
                 Cancel

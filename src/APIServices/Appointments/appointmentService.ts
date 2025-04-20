@@ -5,16 +5,16 @@ export type AppointmentStatus = "Completed" | "Pending" | "Confirmed" | "Cancell
 
 export interface AppointmentDTO {
   id: number;
-  PatientName: string;
-  Date: string;
-  Time: string;
-  Status: AppointmentStatus;
-  Notes: string;
+  patientName: string;
+  date: string;
+  time: string;
+  status: string;
+  notes: string;
 }
 
 export interface AppointmentResponse {
   PersonId: number;
-  Status?: string;
+  status?: string;
   SortBy?: string;
   Order?: string;
 }
@@ -43,11 +43,12 @@ export const getAppointmentsByStatusAndDoctor = async (
   request: AppointmentResponse
 ): Promise<AppointmentDTO[]> => {
   try {
+
     const response = await api.post("/Appointment/person/status/", request);
     return response.data;
   } catch (error) {
-    console.error(`Failed to fetch ${request.Status} appointments:`, error);
-    throw new Error(`Could not fetch ${request.Status} appointments`);
+    console.error(`Failed to fetch ${request.status} appointments:`, error);
+    throw new Error(`Could not fetch ${request.status} appointments`);
   }
 };
 
