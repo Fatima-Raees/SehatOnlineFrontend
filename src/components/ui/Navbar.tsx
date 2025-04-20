@@ -34,6 +34,10 @@ const Navbar = () => {
             View Doctors
           </Link>
 
+          <Link href="/reports" className="text-gray-700 hover:text-blue-600">
+            Medical Reports
+          </Link>
+
           <Link href="#" className="text-gray-700 hover:text-blue-600">
             Services
           </Link>
