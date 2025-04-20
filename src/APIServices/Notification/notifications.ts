@@ -51,3 +51,31 @@ export const sendNotification = async (
       };
     }
   };
+  export const fetchDashboardData = async (
+    personId: number
+  ) => {
+    try {
+      console.log("Fetching dashboard data for personId:", personId); // Debugging line
+      const response = await axios.post(
+        `${api_base_url}/notifications/dashboard`,
+        {
+          personId
+          
+        },
+        { withCredentials: true }
+      );
+  
+      return {
+        success: true,
+        message: 'Dashboard data fetched successfully',
+        data: response.data,
+      };
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      return {
+        success: false,
+        message: 'Failed to fetch dashboard data',
+        data: null,
+      };
+    }
+  };
