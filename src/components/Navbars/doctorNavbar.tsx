@@ -1,19 +1,8 @@
 "use client"
 
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-
-// List of specialties can be kept for reference but won't be used in the navbar
-const specialties = [
-  { name: "Gynecology", slug: "gynecology" },
-  { name: "Pediatrics", slug: "pediatrics" },
-  { name: "Dermatology", slug: "dermatology" },
-  { name: "Cardiology", slug: "cardiology" },
-  { name: "Orthopedics", slug: "orthopedics" },
-  { name: "Neurology", slug: "neurology" },
-]
-
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 const DoctorNavbar = () => {
   return (
     <nav className="bg-white shadow-md">

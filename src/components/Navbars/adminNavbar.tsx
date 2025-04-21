@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input"
 const defaultSidebarLinks = [
   {
     title: "Dashboard",
-    href: "/dashboard",
+    href: "Admin/dashboard",
     icon: LayoutDashboard,
   },
   {
@@ -36,19 +36,19 @@ const defaultSidebarLinks = [
   },
   {
     title: "Add Subscription",
-    href: "/subscriptions/add",
+    href: "/subscriptions/addsubscription",
     icon: PlusCircle,
   },
   {
     title: "Analytics",
-    href: "/analytics",
+    href: "Admin/dashboard/analytics",
     icon: BarChart3,
   },
-  {
-    title: "Settings",
-    href: "/settings",
-    icon: Settings,
-  },
+  // {
+  //   title: "Settings",
+  //   href: "/settings",
+  //   icon: Settings,
+  // },
 ]
 
 // Sidebar Component

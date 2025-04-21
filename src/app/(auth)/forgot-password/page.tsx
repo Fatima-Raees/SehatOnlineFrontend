@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import type React from "react";
 
 import { useState } from "react";
@@ -11,6 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ForgotPassword() {
+// Create a client component for the form
+function ForgotPasswordForm() {
+  const searchParams = useSearchParams();
+  const role = searchParams.get("role") || "patient"; // Default to patient if not provided
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -84,5 +89,14 @@ export default function ForgotPassword() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Main page component that wraps the form in Suspense
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ForgotPasswordForm />
+    </Suspense>
   );
 }
