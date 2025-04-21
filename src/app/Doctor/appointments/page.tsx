@@ -6,108 +6,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { BadgeProps } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { BadgeOrigin } from "@mui/material"
-type AppointmentStatus = "completed" | "pending" | "confirmed" | "cancelled"
-type BadgeVariant = NonNullable<BadgeProps["variant"]>
-type Appointment = {
-  id: number
-  patientName: string
-  patientImage: string
-  date: string
-  time: string
-  doctor: string
-  department: string
-  status: AppointmentStatus
-  notes: string
-}
+import Link from "next/link"
+import type { BadgeProps } from "@/components/ui/badge"
 
-// Updated mock appointment data with confirmed status
-const appointments: Appointment[] = [
-  {
-    id: 1,
-    patientName: "Sarah Johnson",
-    patientImage: "/placeholder.svg?height=40&width=40",
-    date: "2025-04-18",
-    time: "09:30 AM",
-    doctor: "Dr. Michael Chen",
-    department: "Cardiology",
-    status: "completed",
-    notes: "Follow-up appointment after surgery",
-  },
-  {
-    id: 2,
-    patientName: "Robert Williams",
-    patientImage: "/placeholder.svg?height=40&width=40",
-    date: "2025-04-18",
-    time: "11:00 AM",
-    doctor: "Dr. Emily Rodriguez",
-    department: "Neurology",
-    status: "pending",
-    notes: "Initial consultation for recurring headaches",
-  },
-  {
-    id: 3,
-    patientName: "James Thompson",
-    patientImage: "/placeholder.svg?height=40&width=40",
-    date: "2025-04-19",
-    time: "02:15 PM",
-    doctor: "Dr. Sarah Wilson",
-    department: "Orthopedics",
-    status: "confirmed",
-    notes: "X-ray review for fractured wrist",
-  },
-  {
-    id: 4,
-    patientName: "Maria Garcia",
-    patientImage: "/placeholder.svg?height=40&width=40",
-    date: "2025-04-20",
-    time: "10:45 AM",
-    doctor: "Dr. David Kim",
-    department: "Dermatology",
-    status: "completed",
-    notes: "Skin condition follow-up",
-  },
-  {
-    id: 5,
-    patientName: "Thomas Brown",
-    patientImage: "/placeholder.svg?height=40&width=40",
-    date: "2025-04-20",
-    time: "03:30 PM",
-    doctor: "Dr. Lisa Johnson",
-    department: "Pediatrics",
-    status: "pending",
-    notes: "Annual checkup",
-  },
-  {
-    id: 6,
-    patientName: "Jennifer Lee",
-    patientImage: "/placeholder.svg?height=40&width=40",
-    date: "2025-04-21",
-    time: "01:00 PM",
-    doctor: "Dr. Robert Smith",
-    department: "Ophthalmology",
-    status: "confirmed",
-    notes: "Vision test and prescription update",
-  },
-  {
-    id: 7,
-    patientName: "Daniel Martinez",
-    patientImage: "/placeholder.svg?height=40&width=40",
-    date: "2025-04-22",
-    time: "11:30 AM",
-    doctor: "Dr. Jessica Taylor",
-    department: "Dentistry",
-    status: "confirmed",
-    notes: "Routine dental checkup",
-  },
-]
+import { Appointment, appointments } from "@/app/mockData"
+
+type BadgeVariant = NonNullable<BadgeProps["variant"]>
 
 export default function AppointmentsPage() {
   const [activeTab, setActiveTab] = useState("all")
 
-  // Filter appointments based on active tab
   const filteredAppointments = appointments.filter((appointment) => {
     if (activeTab === "all") return true
     return appointment.status === activeTab
@@ -134,7 +43,6 @@ export default function AppointmentsPage() {
               {filteredAppointments.map((appointment) => (
                 <AppointmentCard key={appointment.id} appointment={appointment} />
               ))}
-
               {filteredAppointments.length === 0 && (
                 <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
                   <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
@@ -153,45 +61,29 @@ export default function AppointmentsPage() {
 }
 
 function AppointmentCard({ appointment }: { appointment: Appointment }) {
-
-  const getBadgeDetails = (
-    status: string
-  ): { variant: BadgeVariant; icon: JSX.Element } => {
+  const getBadgeDetails = (status: string): { variant: BadgeVariant; icon: JSX.Element } => {
     switch (status) {
       case "completed":
-        return {
-          variant: "success",
-          icon: <CheckCircle className="h-3.5 w-3.5 mr-1" />,
-        }
+        return { variant: "success", icon: <CheckCircle className="h-3.5 w-3.5 mr-1" /> }
       case "confirmed":
-        return {
-          variant: "default",
-          icon: <Clock3 className="h-3.5 w-3.5 mr-1" />,
-        }
+        return { variant: "default", icon: <Clock3 className="h-3.5 w-3.5 mr-1" /> }
       case "pending":
       default:
-        return {
-          variant: "outline",
-          icon: <Clock className="h-3.5 w-3.5 mr-1" />,
-        }
+        return { variant: "outline", icon: <Clock className="h-3.5 w-3.5 mr-1" /> }
     }
   }
-  
 
   const badgeDetails = getBadgeDetails(appointment.status)
 
   return (
-    <Card className="overflow-hidden ">
+    <Card className="overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src={appointment.patientImage || "/placeholder.svg"} alt={appointment.patientName} />
               <AvatarFallback>
-                {appointment.patientName
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {appointment.patientName.split(" ").map((n) => n[0]).join("")}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -205,18 +97,12 @@ function AppointmentCard({ appointment }: { appointment: Appointment }) {
           </Badge>
         </div>
       </CardHeader>
+
       <CardContent>
         <div className="grid gap-3">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">
-              {new Date(appointment.date).toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </span>
+            <span className="text-sm">{appointment.date}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -234,40 +120,21 @@ function AppointmentCard({ appointment }: { appointment: Appointment }) {
         </div>
       </CardContent>
 
-      {/* Conditionally render buttons based on appointment status */}
-      {/* {appointment.status !== "completed" && (
+      {appointment.status !== "completed" && (
         <CardFooter className="border-t pt-4 flex justify-between">
-          <Button variant="destructive" size="sm">
-            Cancel
-          </Button>
           {appointment.status === "pending" && (
-            <Button variant="default" size="sm">
-              Confirm
-            </Button>
+            <>
+              <Button variant="destructive" size="sm">Cancel</Button>
+              <Button variant="default" size="sm">Confirm</Button>
+            </>
+          )}
+          {appointment.status === "confirmed" && (
+            <Link href={`/Doctor/appointments/${appointment.id}`}>
+              <Button variant="default" size="sm">Detail</Button>
+            </Link>
           )}
         </CardFooter>
-      )} */}
-      {appointment.status !== "completed" && (
-  <CardFooter className="border-t pt-4 flex justify-between">
-    {appointment.status === "pending" && (
-      <>
-        <Button variant="destructive" size="sm">
-          Cancel
-        </Button>
-        <Button variant="default" size="sm">
-          Confirm
-        </Button>
-      </>
-    )}
-
-    {appointment.status === "confirmed" && (
-      <Button variant="default" size="sm">
-        Detail
-      </Button>
-    )}
-  </CardFooter>
-)}
-
+      )}
     </Card>
   )
 }
