@@ -8,20 +8,30 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Clock, MapPin, Star, Award, BookOpen, Stethoscope, Users } from "lucide-react"
 import { getDoctorById, type DoctorProps } from "@/lib/data/doctors"
 
-export default function DoctorProfilePage({ params }: { params: { id: string } }) {
+type PageProps<T = {}> = {
+  params: T;
+  searchParams?: Record<string, string | string[] | undefined>;
+};
+
+export default function DoctorProfilePage({ params }: PageProps<{ id: string | Promise<string> }>) {
   const router = useRouter()
   const [doctor, setDoctor] = useState<DoctorProps | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const doctorData = getDoctorById(params.id)
-    if (doctorData) {
-      setDoctor(doctorData)
-    } else {
-      // Redirect to doctors page if doctor not found
-      router.push("/doctors")
-    }
-    setLoading(false)
+    const fetchDoctorData = async () => {
+      const id = await Promise.resolve(params.id);
+      const doctorData = getDoctorById(id);
+      if (doctorData) {
+        setDoctor(doctorData);
+      } else {
+        // Redirect to doctors page if doctor not found
+        router.push("/doctors");
+      }
+      setLoading(false);
+    };
+
+    fetchDoctorData();
   }, [params.id, router])
 
   if (loading) {
@@ -157,7 +167,7 @@ export default function DoctorProfilePage({ params }: { params: { id: string } }
                         <MapPin className="h-5 w-5 text-bright-blue mt-0.5" />
                         <div>
                           <p className="font-subheading text-dark-blue">Location</p>
-                          <p className="text-sm text-muted-foreground">Sehat Online Medical Center, Lahore</p>
+                          <p className="text-sm text-muted-foreground">Sehat Online Medical Center, Lahore</p> {/* Ignore spellcheck */}
                         </div>
                       </li>
                     </ul>

@@ -4,18 +4,17 @@ import { Suspense } from "react";
 import type React from "react";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function ForgotPassword() {
 // Create a client component for the form
 function ForgotPasswordForm() {
   const searchParams = useSearchParams();
-  const role = searchParams.get("role") || "patient"; // Default to patient if not provided
+  searchParams.get("role") || "patient"; // Default to patient if not provided
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -29,7 +28,7 @@ function ForgotPasswordForm() {
 
     setIsSubmitting(false);
 
-    router.push(`/forgot-password/confirmpassword?email=${email}`);
+    router.push(`/forgot-password/confirm-password?email=${email}`);
 
   };
 
@@ -91,7 +90,6 @@ function ForgotPasswordForm() {
     </div>
   );
 }
-
 // Main page component that wraps the form in Suspense
 export default function ForgotPasswordPage() {
   return (
