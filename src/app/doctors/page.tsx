@@ -1,38 +1,45 @@
 "use client"
 
-import { useState } from "react"
-import { DoctorCard, type DoctorProps } from "@/components/doctors/doctor-card"
+import { useEffect, useState } from "react"
+import { DoctorProps } from "@/components/doctors/doctor-card"
+import { getAllDoctors, getFilteredDoctors } from "@/APIServices/Doctors/doctorAPI"
 import { DoctorFilter } from "@/components/doctors/doctor-filter"
-import { doctors } from "@/lib/data/doctors"
+import { DoctorCard } from "@/components/doctors/doctor-card"
 
 export default function DoctorsPage() {
-  const [filteredDoctors, setFilteredDoctors] = useState<DoctorProps[]>(doctors)
+  const [doctors, setDoctors] = useState<DoctorProps[]>([])
+  const [filteredDoctors, setFilteredDoctors] = useState<DoctorProps[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Fetch all doctors when the component is mounted
+    getAllDoctors()
+      .then((data) => {
+        setDoctors(data)
+        setFilteredDoctors(data) // Initially, show all doctors
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error("Error fetching doctors:", err)
+        setLoading(false)
+      })
+  }, [])
+
+  const handleFilterChange = (filtered: DoctorProps[]) => {
+    setFilteredDoctors(filtered)
+  }
 
   return (
-    <>
-      
-      <main className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-heading text-deep-blue mb-2">Our Doctors</h1>
-          <p className="text-muted-foreground font-body max-w-3xl">
-            Find and book appointments with the best doctors in Pakistan. Our doctors are experienced specialists who
-            provide high-quality healthcare services.
-          </p>
-        </div>
-
-        <DoctorFilter doctors={doctors} onFilterChange={setFilteredDoctors} />
-
-        <div className="space-y-6">
-          {filteredDoctors.length > 0 ? (
-            filteredDoctors.map((doctor) => <DoctorCard key={doctor.id} doctor={doctor} />)
-          ) : (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-subheading text-deep-blue mb-2">No doctors found</h3>
-              <p className="text-muted-foreground font-body">Try adjusting your search or filter criteria</p>
-            </div>
-          )}
-        </div>
-      </main>
-    </>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Doctors</h1>
+      <DoctorFilter doctors={doctors} onFilterChange={handleFilterChange} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {loading ? (
+          <p>Loading doctors...</p>
+        ) : (
+          filteredDoctors.map((doctor) => <DoctorCard key={doctor.person.personId} doctor={doctor} />)
+        )}
+      </div>
+    </div>
   )
 }
