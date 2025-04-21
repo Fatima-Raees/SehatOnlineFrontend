@@ -12,6 +12,27 @@ export interface AppointmentDTO {
   notes: string;
 }
 
+export interface AppointmentInformationDTO {
+  patientName: string;
+  date: string;
+  time: string;
+  prescription: string;
+  testSuggestion: string;
+}
+
+export interface AppointmentDetailsDTO {
+  id: number;
+  patientName: string;
+  doctorName: string;
+  date: string;
+  time: string;
+  status: string;
+  notes: string;
+  prescription: string;
+  testSuggestion: string;
+  medicalReportUrl: string;
+}
+
 export interface AppointmentResponse {
   PersonId: number;
   status?: string;
@@ -28,10 +49,7 @@ export const getAppointmentsByDoctor = async (
   request: AppointmentResponse
 ): Promise<AppointmentDTO[]> => {
   try {
-    
     const response = await api.post("/Appointment/person", request);
-    
-   
     return response.data;
   } catch (error) {
     console.error("Failed to fetch appointments:", error);
@@ -43,7 +61,6 @@ export const getAppointmentsByStatusAndDoctor = async (
   request: AppointmentResponse
 ): Promise<AppointmentDTO[]> => {
   try {
-
     const response = await api.post("/Appointment/person/status/", request);
     return response.data;
   } catch (error) {
@@ -52,13 +69,23 @@ export const getAppointmentsByStatusAndDoctor = async (
   }
 };
 
-export const getAppointmentById = async (id: number): Promise<AppointmentDTO> => {
+export const getAppointmentById = async (id: number): Promise<AppointmentDetailsDTO> => {
   try {
     const response = await api.get(`/Appointment/${id}`);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch appointment:", error);
     throw new Error("Could not fetch appointment");
+  }
+};
+
+export const getAppointmentInformationById = async (id: number): Promise<AppointmentInformationDTO> => {
+  try {
+    const response = await api.get(`/Appointment/${id}/info`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch appointment information:", error);
+    throw new Error("Could not fetch appointment information");
   }
 };
 
@@ -79,3 +106,21 @@ export const cancelAppointment = async (id: number): Promise<void> => {
     throw new Error("Could not cancel appointment");
   }
 };
+
+export async function updateAppointmentDetails(data: {
+  id: number;
+  diagnosis: string;
+  suggestedTests: string;
+}) {
+  console.log("Updating appointment details:", data);
+  const res = await fetch(`${api_base_url}/Appointment/${data.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      diagnosis: data.diagnosis,
+      suggestedTests: data.suggestedTests,
+    }),
+  });
+
+  if (!res.ok) throw new Error("Failed to update appointment details");
+}

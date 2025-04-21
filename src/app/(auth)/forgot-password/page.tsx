@@ -4,14 +4,13 @@ import { Suspense } from "react";
 import type React from "react";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function ForgotPassword() {
 // Create a client component for the form
 function ForgotPasswordForm() {
   const searchParams = useSearchParams();
@@ -93,7 +92,8 @@ function ForgotPasswordForm() {
 }
 
 // Main page component that wraps the form in Suspense
-export default function ForgotPasswordPage() {
+
+export default function ForgotPassword() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ForgotPasswordForm />

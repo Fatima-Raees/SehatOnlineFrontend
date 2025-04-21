@@ -19,7 +19,7 @@ export default function ReportsPage() {
   const router = useRouter()
 
   // This would typically come from your auth system
-  const userId = "user123" // Replace with actual user ID from your auth system
+  const userId = "2" // Replace with actual user ID from your auth system
 
   // Fetch user reports
   const fetchReports = async () => {
