@@ -25,6 +25,7 @@ export default function ReportsPage() {
   const fetchReports = async () => {
     try {
       setIsLoading(true)
+      
       const response = await getUserReports(userId)
 
       if (response.success && response.reports) {
@@ -60,7 +61,8 @@ export default function ReportsPage() {
     
     try {
       setIsUploading(true)
-
+      const url_print = result.info.secure_url
+      console.log("Uploaded file URL:", url_print)
       // Save metadata to your backend
       const response = await saveReportMetadata({
         userId,
