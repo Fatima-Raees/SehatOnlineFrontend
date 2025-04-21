@@ -1,10 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import Link from "next/link";
-import { loginUser } from "../../../APIServices/users/usersAPI";
+import { loginUser ,sendOTP} from "../../../APIServices/users/usersAPI";
 import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 
@@ -16,6 +17,7 @@ interface CustomJwtPayload extends JwtPayload {
 export default function LoginPage() {
   const [isDoctor, setIsDoctor] = useState(false);
   const [email, setEmail] = useState("");
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 

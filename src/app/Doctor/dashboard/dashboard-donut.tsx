@@ -1,15 +1,20 @@
-"use client"
+"use client";
 
-import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts"
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
-const data = [
-  { name: "Women", value: 44 },
-  { name: "Men", value: 55 },
-]
+interface DashboardDonutProps {
+  womenPercentage: number;
+  menPercentage: number;
+}
 
-const COLORS = ["#4f46e5", "#c7d2fe"]
+export function DashboardDonut({ womenPercentage, menPercentage }: DashboardDonutProps) {
+  const data = [
+    { name: "Women", value: womenPercentage },
+    { name: "Men", value: menPercentage },
+  ];
 
-export function DashboardDonut() {
+  const COLORS = ["#4f46e5", "#c7d2fe"];
+
   return (
     <div className="h-[140px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -19,10 +24,8 @@ export function DashboardDonut() {
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          
         </PieChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }
-
