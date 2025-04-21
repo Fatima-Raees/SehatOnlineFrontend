@@ -1,0 +1,10 @@
+[
+    {"disease": "Migraine", "symptoms": "headache, nausea, sensitivity to light, dizziness"},
+    {"disease": "Influenza", "symptoms": "fever, cough, sore throat, fatigue, body aches"},
+    {"disease": "Common Cold", "symptoms": "runny nose, sneezing, mild fever, congestion"},
+    {"disease": "Pneumonia", "symptoms": "fever, cough, shortness of breath, chest pain"},
+    {"disease": "Gastritis", "symptoms": "stomach pain, nausea, vomiting, bloating"},
+    {"disease": "Appendicitis", "symptoms": "abdominal pain, fever, nausea, vomiting"},
+    {"disease": "Urinary Tract Infection", "symptoms": "burning sensation when urinating, frequent urination, pelvic pain"},
+    {"disease": "Bronchitis", "symptoms": "cough, mucus production, fatigue, shortness of breath"}
+]
