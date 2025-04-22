@@ -17,7 +17,7 @@ interface CustomJwtPayload extends JwtPayload {
 export default function LoginPage() {
   const [isDoctor, setIsDoctor] = useState(false);
   const [email, setEmail] = useState("");
-  const router = useRouter();
+  // Removed unused router
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -79,15 +79,15 @@ export default function LoginPage() {
           {/* Patient Login Form */}
           <div className={`absolute top-0 left-0 h-full w-1/2 p-10 flex flex-col items-center justify-center transition-all duration-500 ease-in-out ${isDoctor ? "opacity-0 -translate-x-full pointer-events-none" : "opacity-100 translate-x-0 pointer-events-auto"}`}>
             <h1 className="text-2xl font-semibold text-[#0A192F]">Patient Login</h1>
-            <a href="#" className="p-2 border rounded-lg w-48 flex items-center justify-center space-x-2 hover:bg-gray-100 transition mt-3">
+            {/* <a href="#" className="p-2 border rounded-lg w-48 flex items-center justify-center space-x-2 hover:bg-gray-100 transition mt-3">
               <FontAwesomeIcon icon={faGoogle} className="text-xl text-red-500" />
               <span className="text-sm font-medium">Continue with Google</span>
-            </a>
+            </a> */}
             <span className="text-sm text-gray-600 mt-2">or use your email to login</span>
             <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" />
             <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" />
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-            <Link href="/forgot-password" className="text-sm text-[#2563EB] mt-2">Forgot Your Password?</Link>
+            {/* <Link href="/forgot-password" className="text-sm text-[#2563EB] mt-2">Forgot Your Password?</Link> */}
             <button onClick={handleLogin} className="mt-4 bg-[#0077B6] text-white px-6 py-2 rounded-lg transition-all duration-300 hover:bg-[#005F91] hover:shadow-lg">Sign In</button>
             <Link href="/signup" className="text-sm text-[#2563EB] mt-2">Don't have an account? Sign Up</Link>
           </div>
@@ -95,10 +95,10 @@ export default function LoginPage() {
           {/* Doctor Login Form */}
           <div className={`absolute top-0 right-0 h-full w-1/2 p-10 flex flex-col items-center justify-center transition-all duration-500 ease-in-out ${isDoctor ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-full pointer-events-none"}`}>
             <h1 className="text-2xl font-semibold text-[#0A192F]">Doctor Login</h1>
-            <a href="#" className="p-2 border rounded-lg w-48 flex items-center justify-center space-x-2 hover:bg-gray-100 transition mt-3">
+            {/* <a href="#" className="p-2 border rounded-lg w-48 flex items-center justify-center space-x-2 hover:bg-gray-100 transition mt-3">
               <FontAwesomeIcon icon={faGoogle} className="text-xl text-red-500" />
               <span className="text-sm font-medium">Continue with Google</span>
-            </a>
+            </a> */}
             <span className="text-sm text-gray-600 mt-2">or use your email to login</span>
             <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" />
             <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full mt-3 p-2 rounded-lg bg-gray-100 border" />

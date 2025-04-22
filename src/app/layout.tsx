@@ -23,6 +23,9 @@ const queryClient = new QueryClient({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<string | null>(null);
+  // Object.keys(Cookies.get()).forEach((cookieName) => {
+  //   Cookies.remove(cookieName);
+  // });
   const Role = Cookies.get("role");
   return (
     <html lang="en">
