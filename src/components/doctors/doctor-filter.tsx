@@ -1,14 +1,13 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Search, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
-import { Checkbox } from "@/components/ui/checkbox"
-import type { DoctorProps } from "@/components/doctors/doctor-card"
+import { DoctorProps } from "@/components/doctors/doctor-card"
+import { getFilteredDoctors } from "@/APIServices/Doctors/doctorAPI"
 
 interface FilterProps {
   doctors: DoctorProps[]
@@ -19,89 +18,57 @@ export function DoctorFilter({ doctors, onFilterChange }: FilterProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [filters, setFilters] = useState({
-    minExperience: 0,
     maxFee: 5000,
-    availability: [] as string[],
-    gender: [] as string[],
+    specialization: [] as string[],
+    hospital: [] as string[],
+    city: [] as string[], // Add city as filter if required
   })
 
-  // Get unique availability options
-  const availabilityOptions = Array.from(new Set(doctors.map((d) => d.availability)))
+  const specializationOptions = Array.from(new Set(doctors.map((d) => d.specialization.value)))
+  const hospitalOptions = Array.from(
+    new Set(doctors.flatMap((d) => d.doctorHospitals.map((h) => h.hospital.name))),
+  )
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     applyFilters()
   }
 
-  const handleFilterChange = (key: string, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-  }
-
   const applyFilters = () => {
-    let filtered = [...doctors]
-
-    // Apply search
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase()
-      filtered = filtered.filter(
-        (doctor) =>
-          doctor.name.toLowerCase().includes(term) ||
-          doctor.specialty.toLowerCase().includes(term) ||
-          (doctor.subSpecialty && doctor.subSpecialty.toLowerCase().includes(term)),
-      )
+    const filterParams = {
+      specialization: filters.specialization.join(","),
+      city: filters.city.join(","),
+      maxFee: filters.maxFee,
+      hospital: filters.hospital,
     }
 
-    // Apply experience filter
-    if (filters.minExperience > 0) {
-      filtered = filtered.filter((doctor) => doctor.experience >= filters.minExperience)
-    }
-
-    // Apply fee filter
-    filtered = filtered.filter((doctor) => doctor.fee <= filters.maxFee)
-
-    // Apply availability filter
-    if (filters.availability.length > 0) {
-      filtered = filtered.filter((doctor) => filters.availability.includes(doctor.availability))
-    }
-
-    // Apply gender filter
-    if (filters.gender.length > 0) {
-      // This would require gender to be added to the doctor model
-      // For now, we'll skip this filter
-    }
-
-    onFilterChange(filtered)
+    getFilteredDoctors(filterParams)
+      .then((filteredDoctors: DoctorProps[]) => {
+      onFilterChange(filteredDoctors)
+      })
+      .catch((err: unknown) => {
+      console.error("Error filtering doctors:", err)
+      })
   }
 
   const resetFilters = () => {
     setSearchTerm("")
     setFilters({
-      minExperience: 0,
       maxFee: 5000,
-      availability: [],
-      gender: [],
+      specialization: [],
+      hospital: [],
+      city: [],
     })
     onFilterChange(doctors)
   }
 
-  const toggleAvailability = (value: string) => {
+  const toggleFilter = (key: "specialization" | "hospital" | "city", value: string) => {
     setFilters((prev) => {
-      const current = [...prev.availability]
+      const current = [...prev[key]]
       if (current.includes(value)) {
-        return { ...prev, availability: current.filter((v) => v !== value) }
+        return { ...prev, [key]: current.filter((v) => v !== value) }
       } else {
-        return { ...prev, availability: [...current, value] }
-      }
-    })
-  }
-
-  const toggleGender = (value: string) => {
-    setFilters((prev) => {
-      const current = [...prev.gender]
-      if (current.includes(value)) {
-        return { ...prev, gender: current.filter((v) => v !== value) }
-      } else {
-        return { ...prev, gender: [...current, value] }
+        return { ...prev, [key]: [...current, value] }
       }
     })
   }
@@ -113,7 +80,7 @@ export function DoctorFilter({ doctors, onFilterChange }: FilterProps) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
           <Input
             type="search"
-            placeholder="Search doctors by name or specialty..."
+            placeholder="Search doctors by name, specialization, or hospital..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 w-full"
@@ -130,7 +97,6 @@ export function DoctorFilter({ doctors, onFilterChange }: FilterProps) {
             <Filter className="h-4 w-4" />
             Filters
           </Button>
-
           <Button type="button" onClick={applyFilters} className="bg-blue-600 hover:bg-blue-700">
             Apply
           </Button>
@@ -146,72 +112,52 @@ export function DoctorFilter({ doctors, onFilterChange }: FilterProps) {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Experience Filter */}
-            <div>
-              <h4 className="font-medium mb-2 text-gray-800">Experience (Years)</h4>
-              <div className="pl-2 pr-4">
-                <Slider
-                  defaultValue={[filters.minExperience]}
-                  max={20}
-                  step={1}
-                  onValueChange={(value: number[]) => handleFilterChange("minExperience", value[0])}
-                />
-                <div className="mt-2 text-sm text-gray-500">{filters.minExperience}+ years</div>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Fee Filter */}
             <div>
               <h4 className="font-medium mb-2 text-gray-800">Maximum Fee (Rs.)</h4>
-              <div className="pl-2 pr-4">
-                <Slider
-                  defaultValue={[filters.maxFee]}
-                  max={10000}
-                  step={500}
-                  onValueChange={(value: number[]) => handleFilterChange("maxFee", value[0])}
-                />
-                <div className="mt-2 text-sm text-gray-500">Up to Rs. {filters.maxFee}</div>
-              </div>
+              <Slider
+                defaultValue={[filters.maxFee]}
+                max={10000}
+                step={500}
+                onValueChange={(value) => setFilters((prev) => ({ ...prev, maxFee: value[0] })) }
+              />
+              <div className="mt-2 text-sm text-gray-500">Up to Rs. {filters.maxFee}</div>
             </div>
 
-            {/* Availability Filter */}
+            {/* Specialization Filter */}
             <div>
-              <h4 className="font-medium mb-2 text-gray-800">Availability</h4>
+              <h4 className="font-medium mb-2 text-gray-800">Specialization</h4>
               <div className="space-y-2">
-                {availabilityOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`availability-${option}`}
-                      checked={filters.availability.includes(option)}
-                      onCheckedChange={() => toggleAvailability(option)}
+                {specializationOptions.map((spec) => (
+                  <label key={spec} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={filters.specialization.includes(spec)}
+                      onChange={() => toggleFilter("specialization", spec)}
                     />
-                    <label htmlFor={`availability-${option}`} className="text-sm cursor-pointer">
-                      {option}
-                    </label>
-                  </div>
+                    <span className="text-sm">{spec}</span>
+                  </label>
                 ))}
               </div>
             </div>
 
-            {/* Gender Filter */}
-            {/* <div>
-              <h4 className="font-medium mb-2 text-gray-800">Gender</h4>
+            {/* Hospital Filter */}
+            <div>
+              <h4 className="font-medium mb-2 text-gray-800">Hospital</h4>
               <div className="space-y-2">
-                {["Male", "Female"].map((gender) => (
-                  <div key={gender} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`gender-${gender}`}
-                      checked={filters.gender.includes(gender)}
-                      onCheckedChange={() => toggleGender(gender)}
+                {hospitalOptions.map((hosp) => (
+                  <label key={hosp} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={filters.hospital.includes(hosp)}
+                      onChange={() => toggleFilter("hospital", hosp)}
                     />
-                    <label htmlFor={`gender-${gender}`} className="text-sm cursor-pointer">
-                      {gender}
-                    </label>
-                  </div>
+                    <span className="text-sm">{hosp}</span>
+                  </label>
                 ))}
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       )}
