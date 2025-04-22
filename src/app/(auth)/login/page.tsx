@@ -63,7 +63,7 @@ export default function LoginPage() {
       const roleRedirects: Record<string, string> = {
         Doctor: "/Doctor/dashboard",
         Admin: "/Admin/dashboard",
-        Patient: "/Patient/dashboard",
+        Patient: "/",
       };
       console.log(userRole);
       window.location.href = roleRedirects[userRole] || "/";
