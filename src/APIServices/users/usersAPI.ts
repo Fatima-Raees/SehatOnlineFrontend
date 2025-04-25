@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 const api_base_url = "https://localhost:7259/api";
 export const loginUser = async (email: string, password: string) => {
   try {
@@ -156,5 +157,18 @@ export const signupUser = async (userData: any) => {
   } catch (error) {
     console.error("Signup error:", error);
     throw error; // Re-throw error to be handled in the component
+  }
+};
+export const logoutUser = async () => {
+  try {
+    const response = await axios.post(`${api_base_url}/Person/logout`, {}, { withCredentials: true });
+    // Clear cookies or local storage if needed
+    Cookies.remove("role");
+    Cookies.remove("PersonID");
+    Cookies.remove("loggedIn");
+    return response.data;
+  } catch (error) {
+    console.error("Logout failed", error);
+    throw error;
   }
 };

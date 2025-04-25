@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { logoutUser } from "../../APIServices/users/usersAPI";
+
 
 const PatientNavbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -12,8 +14,8 @@ const PatientNavbar = () => {
 
   useEffect(() => {
     
-    const role = sessionStorage.getItem("role");
-    setIsLoggedIn(role === "patient");
+    // const role = sessionStorage.getItem("role");
+    // setIsLoggedIn(role === "Patient");
   }, []);
 
   const handleHomeClick = () => {
@@ -64,9 +66,10 @@ const PatientNavbar = () => {
 
         {/* Login / Signup or User Info */}
         <div className="space-x-4 flex items-center">
-          {!isLoggedIn ? (
-            <Button variant="outline">
-              <Link href="/login">Login</Link> / <Link href="/signup">Sign Up</Link>
+          {isLoggedIn ? (
+            <Button variant="outline" onClick={() => logoutUser()}>
+              <Link href="/login">LogOut</Link>
+               {/* / <Link href="/signup">Sign Up</Link> */}
             </Button>
           ) : (
             <div className="flex items-center space-x-4">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { logoutUser } from "../../APIServices/users/usersAPI";
 const DoctorNavbar = () => {
   return (
     <nav className="bg-white shadow-md">
@@ -41,9 +42,10 @@ const DoctorNavbar = () => {
 
         {/* Login / Signup Combined */}
         <div className="space-x-4 flex items-center">
-          <Button variant="outline">
-            <Link href="/login">Login</Link> / <Link href="/signup">Sign Up</Link>
-          </Button>
+            <Button variant="outline" onClick={() => logoutUser()}>
+            <Link href="/">LogOut</Link>
+            {/* / <Link href="/signup">Sign Up</Link> */}
+            </Button>
         </div>
       </div>
     </nav>

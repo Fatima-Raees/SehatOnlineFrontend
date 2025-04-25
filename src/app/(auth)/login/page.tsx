@@ -54,7 +54,7 @@ export default function LoginPage() {
       const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
       console.log(PersonID, userRole);
 
-      Cookies.set("token", token, { expires: 1 });
+      //Cookies.set("token", token, { expires: 1 });
       Cookies.set("role", userRole, { expires: 1 });
       Cookies.set("PersonID", PersonID, { expires: 1 });
       Cookies.set("loggedIn", "true", { expires: 1 });
@@ -63,7 +63,7 @@ export default function LoginPage() {
       const roleRedirects: Record<string, string> = {
         Doctor: "/Doctor/dashboard",
         Admin: "/Admin/dashboard",
-        Patient: "/Patient/dashboard",
+        Patient: "/",
       };
       console.log(userRole);
       window.location.href = roleRedirects[userRole] || "/";
