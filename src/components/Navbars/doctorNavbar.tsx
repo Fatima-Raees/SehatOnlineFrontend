@@ -28,8 +28,8 @@ const DoctorNavbar = () => {
             Medical Reports
           </Link>
 
-          <Link href="#" className="text-gray-700 hover:text-blue-600">
-            Services
+          <Link href="/chat" className="text-gray-700 hover:text-blue-600">
+            Chat
           </Link>
           <Link href="#" className="text-gray-700 hover:text-blue-600">
             Blog
