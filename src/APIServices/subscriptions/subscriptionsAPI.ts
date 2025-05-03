@@ -1,5 +1,6 @@
 import axios from 'axios';
-const api_base_url = process.env.API_Base_URL || 'https://localhost:7259/api'; // Fallback to localhost
+const api_base_url = process.env.NEXT_PUBLIC_API_Base_URL 
+// 'https://localhost:7259/api'; // Fallback to localhost
 export const addPlan = async (planData: {
   PlanName: string;
   Price: number;
