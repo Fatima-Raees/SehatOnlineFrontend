@@ -1,5 +1,6 @@
 import axios from "axios";
-const api_base_url = "https://localhost:7259/api";
+const api_base_url = process.env.NEXT_PUBLIC_API_Base_URL;
+//"https://localhost:7259/api";
 
 export type AppointmentStatus = "Completed" | "Pending" | "Confirmed" | "Cancelled";
 

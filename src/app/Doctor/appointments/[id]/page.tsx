@@ -58,7 +58,7 @@ import { Appointment, appointments } from "@/app/mockData"
 export default function AppointmentDetailPage() {
   console.log("✅ Loaded AppointmentDetailPage component")
 
-  const { id } = useParams()
+  const { id } = useParams() as { id: string }
   const [appointment, setAppointment] = useState<Appointment | null>(null)
   const [loading, setLoading] = useState(true)
 
