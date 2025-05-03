@@ -1,5 +1,6 @@
 import axios from "axios";
-const api_base_url = "https://sehatonline20250411121316.azurewebsites.net/api";
+import Cookies from "js-cookie";
+const api_base_url = process.env.NEXT_PUBLIC_API_Base_URL
 export const loginUser = async (email: string, password: string) => {
   try {
     // if (!process.env.API_Base_URL) {

@@ -1,8 +1,8 @@
 
 // APIServices/Appointment/appointmentAPI.ts
 import axios from 'axios';
-
-const API_BASE = process.env.API_Base_URL  || "https://sehatonline20250411121316.azurewebsites.net/api"
+const API_BASE = process.env.NEXT_PUBLIC_API_Base_URL
+//  || "https://localhost:7259/api"
 interface AppointmentData {
     PatientId: string;
     HospitalId: string;

@@ -45,8 +45,8 @@ export default function OTPVerification() {
     try {
       const response = await verifyOTP(email, otp);
       if (response.success) {
-        const flow = Cookies.get("flow");
-        const userRole = Cookies.get("role")
+        const flow = Cookies.get("otpFlow");
+        const userRole = Cookies.get("role");
         if(flow === "signup"){
           const tempUserData = Cookies.get("tempUserData");
           if (tempUserData) {
@@ -54,6 +54,7 @@ export default function OTPVerification() {
             await signupUser(parsedData); 
             Cookies.remove("tempUserData");
             alert("Registration successful!");
+            router.push("/login"); // Redirect to login page after successful signup
         }
         
       } else if (flow === "login") {
