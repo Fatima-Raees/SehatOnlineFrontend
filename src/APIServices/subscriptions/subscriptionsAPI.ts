@@ -22,3 +22,26 @@ export const addPlan = async (planData: {
     throw new Error('Failed to add plan');
   }
 };
+//write an API to get all the plans
+export const getAllPlans = async () => {
+  try {
+    const response = await axios.get(`${api_base_url}/Plans/getallplans`, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.data;
+    const formattedSubscriptions = data.map((item: any) => ({
+      id: `SUB-${item.planID.toString().padStart(3, "0")}`,
+      name: item.planName,
+      plan: item.planType,
+      startDate: new Date(item.createdAt).toLocaleDateString(),
+      endDate: new Date(item.updatedAt).toLocaleDateString(),
+    }));
+    return formattedSubscriptions; // Returns the formatted list of plans
+  } catch (error) {
+    console.error('Error fetching plans:', error);
+    throw new Error('Failed to fetch plans');
+  }
+};
