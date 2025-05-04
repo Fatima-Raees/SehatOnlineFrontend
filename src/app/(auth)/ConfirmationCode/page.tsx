@@ -110,7 +110,7 @@ export default function OTPVerification() {
     try {
       const response = await verifyOTP(email, otp)
       if (response.success) {
-        const flow = Cookies.get("flow")
+        const flow = Cookies.get("otpflow")
         const userRole = Cookies.get("role")
 
         if (flow === "signup") {
