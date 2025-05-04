@@ -42,7 +42,7 @@ const PatientNavbar = () => {
           </button>
 
           {/* Conditionally render links based on login status */}
-          {isLoggedIn ? (
+          {!isLoggedIn ? (
             <>
               <Link href="/patient-dashboard" className="text-gray-700 hover:text-blue-600">
                 Dashboard
@@ -50,7 +50,7 @@ const PatientNavbar = () => {
               <Link href="#" className="text-gray-700 hover:text-blue-600">
                 Notification
               </Link>
-              <Link href="#" className="text-gray-700 hover:text-blue-600">
+              <Link href="/chat" className="text-gray-700 hover:text-blue-600">
                 Chat
               </Link>
              
@@ -66,7 +66,7 @@ const PatientNavbar = () => {
 
         {/* Login / Signup or User Info */}
         <div className="space-x-4 flex items-center">
-          {isLoggedIn ? (
+          {!isLoggedIn ? (
             <Button variant="outline" onClick={() => logoutUser()}>
               <Link href="/login">LogOut</Link>
                {/* / <Link href="/signup">Sign Up</Link> */}

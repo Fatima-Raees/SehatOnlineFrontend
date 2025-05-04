@@ -28,15 +28,6 @@ export const getDoctorById = async (id: string) => {
     return null
   }
 }
-// export const getAllDoctors = async () => {
-//     try {
-//       const res = await axios.get(`${API_BASE}/Doctor/getalldoctors`)
-//       return res.data
-//     } catch (err) {
-//       console.error("Error fetching doctors:", err)
-//       return []
-//     }
-//   }
 
 
 
@@ -50,6 +41,7 @@ export async function getAllDoctors(): Promise<DoctorProps[]> {
   });
   console.log(res)
   return res.data
+  
 }
 
 export async function getFilteredDoctors(filters: { specialization?: string; city?: string }): Promise<DoctorProps[]> {
@@ -57,7 +49,11 @@ export async function getFilteredDoctors(filters: { specialization?: string; cit
   if (filters.specialization) params.append("specialization", filters.specialization)
   if (filters.city) params.append("city", filters.city)
 
-  const res = await axios.get(`${API_BASE}/Doctor/getfiltereddoctors?${params.toString()}`)
+  const res = await axios.get(`${API_BASE}/Doctor/getfiltereddoctors?${params.toString()}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return res.data
 }
 
