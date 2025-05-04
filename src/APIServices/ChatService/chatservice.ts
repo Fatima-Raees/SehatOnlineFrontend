@@ -2,7 +2,7 @@
 import * as signalR from "@microsoft/signalr";
 import { EncryptionService } from "./encryptionservice";
 import Cookies from "js-cookie";
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_Base_URL_FOR_SERVICE;
 export interface Message {
   senderId: number;
   isSenderDoctor: boolean;
@@ -45,8 +45,8 @@ export class ChatService {
 
     // Create the SignalR connection
     this.hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl("/chathub", {
-      accessTokenFactory: () => Cookies.get("token") || "" // Ensure a string is always returned
+    .withUrl(`${API_BASE_URL}/chathub`, {
+      // accessTokenFactory: () => Cookies.get("token") || "" // Ensure a string is always returned
     }) // Update this to your actual hub URL
       .withAutomaticReconnect()
       .build();
