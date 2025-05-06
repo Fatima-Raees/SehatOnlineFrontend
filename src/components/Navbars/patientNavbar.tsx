@@ -53,9 +53,13 @@ const PatientNavbar = () => {
               <Link href="/chat" className="text-gray-700 hover:text-blue-600">
                 Chat
               </Link>
+              <Link href="/c" className="text-gray-700 hover:text-blue-600">
+               ChatBot
+              </Link>
               <Link href="/notification" className="text-gray-700 hover:text-blue-600">
                 Notification
               </Link>
+
              
             </>
           ) : (

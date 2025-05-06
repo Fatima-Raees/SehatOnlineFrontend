@@ -15,11 +15,16 @@ interface CustomJwtPayload extends JwtPayload {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isDoctor, setIsDoctor] = useState(false);
   const [email, setEmail] = useState("");
   // Removed unused router
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [notification, setNotification] = useState<{
+      type: "error" | "success" | "info" | "warning"
+      message: string
+    } | null>(null)
 
   const isValidTokenStructure = (decodedToken: CustomJwtPayload): boolean => {
     return (
@@ -59,15 +64,19 @@ export default function LoginPage() {
       Cookies.set("role", userRole, { expires: expirationTime });
       Cookies.set("PersonID", PersonID, { expires: expirationTime });
       Cookies.set("loggedIn", "true", { expires: expirationTime });
+       Cookies.set("otpFlow", "login")
       alert("Login successful!");
+      setNotification({
+        type: "success",
+        message: "OTP has been sent to your email. Redirecting to verification page...",
+      })
 
-      const roleRedirects: Record<string, string> = {
-        Doctor: "/Doctor/dashboard",
-        Admin: "/Admin/dashboard",
-        Patient: "/",
-      };
+      setTimeout(() => {
+        router.push("/ConfirmationCode")
+      }, 2000)
+     
       console.log(userRole);
-      window.location.href = roleRedirects[userRole] || "/";
+      
     } catch (err) {
       console.error(err);
       setError("Invalid email or password.");
