@@ -1,47 +1,53 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import DoctorNavbar from "@/components/Navbars/doctorNavbar";
 import PatientNavbar from "@/components/Navbars/patientNavbar";
-import AdminLayout from "@/components/Navbars/adminNavbar"
 import Navbar from "@/components/Navbars/Navbar";
+import AdminLayout from "@/components/Navbars/adminNavbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./globals.css";
 import Footer from "./pages/Footer";
 import Cookies from "js-cookie";
 
-// Create a QueryClient instance
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1, // Retry failed requests once
+      staleTime: 1000 * 60 * 5,
+      retry: 1,
     },
   },
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const [role, setRole] = useState<string | null>(null);
-  // Object.keys(Cookies.get()).forEach((cookieName) => {
-  //   Cookies.remove(cookieName);
-  // });
-  const Role = Cookies.get("role");
+  const role = Cookies.get("role");
+  const isAdmin = role === "Admin";
+
   return (
     <html lang="en">
       <body>
         <QueryClientProvider client={queryClient}>
-          {Role === "Doctor" ? (
-            <DoctorNavbar />
-          ) : Role === "Patient" ? (
-            <PatientNavbar />
-          ) : Role === "Admin" ? (
-            <AdminLayout children={undefined} title={""} />
+          {isAdmin ? (
+            // Only AdminLayout (no navbar/footer)
+            <AdminLayout title={"Dashboard"}>{children}</AdminLayout>
           ) : (
-            <Navbar />
+            // All other users get navbar + footer
+            <>
+              {role === "Doctor" ? (
+                <DoctorNavbar />
+              ) : role === "Patient" ? (
+                <PatientNavbar />
+              ) : (
+                <Navbar />
+              )}
+
+              <main>{children}</main>
+
+              <Footer />
+            </>
           )}
-          {children}
-          <Footer />
+
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </body>

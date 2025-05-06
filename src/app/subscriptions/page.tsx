@@ -27,7 +27,8 @@ export default function SubscriptionsPage() {
   }, [])
 
   return (
-    <AdminLayout title="Subscriptions">
+    // <AdminLayout title="Subscriptions">
+    <div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-heading text-deep-blue tracking-tight">Manage Subscriptions</h2>
@@ -112,6 +113,7 @@ export default function SubscriptionsPage() {
           </Table>
         </CardContent>
       </Card>
-    </AdminLayout>
+    {/* // </AdminLayout> */}
+    </div>
   );
 }

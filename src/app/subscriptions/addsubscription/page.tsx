@@ -62,7 +62,8 @@ export default function AddSubscriptionPage() {
   };
 
   return (
-    <AdminLayout title="Add Subscription">
+    // <AdminLayout title="Add Subscription">
+    <div>
       <div className="flex items-center mb-6">
         <Link href="/subscriptions" className="mr-4">
           <Button variant="ghost" size="icon" className="text-deep-blue hover:bg-white/50">
@@ -170,7 +171,8 @@ export default function AddSubscriptionPage() {
           </CardFooter>
         </form>
       </Card>
-    </AdminLayout>
+    {/* </AdminLayout> */}
+    </div>
   )
 }
 

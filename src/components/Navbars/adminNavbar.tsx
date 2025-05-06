@@ -21,6 +21,7 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { logoutUser } from "../../APIServices/users/usersAPI";
 
 // Default Sidebar Links (can be overridden via props or customized per role)
 const defaultSidebarLinks = [
@@ -39,11 +40,11 @@ const defaultSidebarLinks = [
     href: "/subscriptions/addsubscription",
     icon: PlusCircle,
   },
-  {
-    title: "Analytics",
-    href: "Admin/dashboard/analytics",
-    icon: BarChart3,
-  },
+  // {
+  //   title: "Analytics",
+  //   href: "Admin/dashboard/analytics",
+  //   icon: BarChart3,
+  // },
   // {
   //   title: "Settings",
   //   href: "/settings",
@@ -116,6 +117,7 @@ function Sidebar({
       <div className="mt-auto p-4 border-t border-white/10">
         <Button
           variant="outline"
+          onClick={logoutUser}
           className={cn(
             "border-white/20 bg-white/5 text-white hover:bg-white/15 hover:text-white transition-colors",
             isOpen ? "w-full justify-start gap-3" : "w-10 h-10 p-0",
@@ -149,7 +151,14 @@ function Header({ title, toggleSidebar }: { title: string; toggleSidebar: () => 
           <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
             3
           </span>
-          <span className="sr-only">Notifications</span>
+            <span className="sr-only">Notifications</span>
+            <button
+            onClick={() => {
+              window.location.href = "/notification";
+            }}
+            className="absolute inset-0"
+            aria-label="Go to notifications"
+            />
         </Button>
         <div className="h-8 w-8 rounded-full overflow-hidden border-2 border-[#003087]/20">
           <Image
