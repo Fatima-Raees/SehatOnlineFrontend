@@ -14,13 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Send, Loader2 } from "lucide-react";
 import Cookies from "js-cookie";
 
-interface ChatProps {
-  userId: number;
-  isDoctor: boolean;
-  otherUserId: number;
-  otherUserName: string;
-}
-
 interface Contact {
   id: number;
   name: string;
@@ -31,7 +24,7 @@ interface Contact {
 
 let tempMessageIdCounter = -1;
 
-const Chat: React.FC<ChatProps> = () => {
+const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [connectionState, setConnectionState] = useState<"disconnected" | "connecting" | "connected">("disconnected");
@@ -43,10 +36,10 @@ const Chat: React.FC<ChatProps> = () => {
   const chatServiceRef = useRef<ChatService | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const API_BASE = process.env.NEXT_PUBLIC_API_Base_URL;
-  const userId = parseInt(Cookies.get("PersonID") || "0", 10);
-  const isDoctor = Cookies.get("role") === "Doctor";
+  const userId = parseInt(Cookies.get("PersonID") || "0", 10); // Derive userId from cookies
+  const isDoctor = Cookies.get("role") === "Doctor"; // Derive isDoctor from cookies
   const { toast } = useToast();
-  
+
   // Fetch appointment contacts
   useEffect(() => {
     const fetchAppointmentContacts = async () => {
@@ -331,4 +324,4 @@ const Chat: React.FC<ChatProps> = () => {
   );
 };
 
-export default Chat;
+export default ChatPage;
