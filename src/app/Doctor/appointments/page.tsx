@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Clock, CheckCircle, AlertCircle, Clock3, ArrowRight } from "lucide-react";
+import { Calendar, Clock, CheckCircle, AlertCircle, Clock3, ArrowRight, CalendarDays } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import AppointmentDetails from "./appointmentDetails";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -22,17 +23,8 @@ import type { BadgeProps } from "@/components/ui/badge";
 export default function AppointmentsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const queryClient = useQueryClient();
-  const personId = "5"; // Replace with auth context in production
-  const parsedPersonId = parseInt(personId, 10);
-
-  if (isNaN(parsedPersonId)) {
-    return (
-      <div className="container py-10 mx-auto">
-        <h1 className="text-3xl font-bold">Appointments</h1>
-        <p className="text-red-500 mt-4">Please log in to view appointments.</p>
-      </div>
-    );
-  }
+  const personId = "5"; 
+  const parsedPersonId = Number(personId);
 
   const {
     data: appointments = [],
@@ -62,10 +54,56 @@ export default function AppointmentsPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["appointments"] }),
   });
 
+  // Count appointments by status for the summary
+  const appointmentCounts = {
+    all: appointments.length,
+    confirmed: appointments.filter((a: AppointmentDTO) => a.status?.toLowerCase() === "confirmed").length,
+    pending: appointments.filter((a: AppointmentDTO) => a.status?.toLowerCase() === "pending").length,
+    completed: appointments.filter((a: AppointmentDTO) => a.status?.toLowerCase() === "completed").length,
+  };
+
   return (
     <div className="container py-10 mx-auto">
-      <h1 className="text-3xl font-bold">Appointments</h1>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Appointments</h1>
+          <p className="mt-1 text-muted-foreground">Manage your scheduled appointments</p>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <SummaryCard
+          title="All Appointments"
+          count={appointmentCounts.all}
+          icon={<CalendarDays className="h-5 w-5 text-blue-500" />}
+          isActive={activeTab === "all"}
+          onClick={() => setActiveTab("all")}
+        />
+        <SummaryCard
+          title="Confirmed"
+          count={appointmentCounts.confirmed}
+          icon={<Clock3 className="h-5 w-5 text-green-500" />}
+          isActive={activeTab === "confirmed"}
+          onClick={() => setActiveTab("confirmed")}
+        />
+        <SummaryCard
+          title="Pending"
+          count={appointmentCounts.pending}
+          icon={<Clock className="h-5 w-5 text-amber-500" />}
+          isActive={activeTab === "pending"}
+          onClick={() => setActiveTab("pending")}
+        />
+        <SummaryCard
+          title="Completed"
+          count={appointmentCounts.completed}
+          icon={<CheckCircle className="h-5 w-5 text-indigo-500" />}
+          isActive={activeTab === "completed"}
+          onClick={() => setActiveTab("completed")}
+        />
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-4 w-full max-w-md">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
@@ -74,8 +112,12 @@ export default function AppointmentsPage() {
         </TabsList>
 
         <TabsContent value={activeTab}>
-          {isLoading ? (
-            <p className="text-center py-4">Loading appointments...</p>
+          {isLoading || isFetching ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
+              {[1, 2, 3].map((i) => (
+                <AppointmentCardSkeleton key={i} />
+              ))}
+            </div>
           ) : appointments.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
               {appointments.map((appointment) => (
@@ -88,13 +130,54 @@ export default function AppointmentsPage() {
               ))}
             </div>
           ) : (
-            <p className="text-center py-4">
-              No {activeTab !== "all" ? activeTab : ""} appointments found.
-            </p>
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
+              <div className="rounded-full bg-muted p-3">
+                <Calendar className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="mt-4 text-lg font-medium">
+                No {activeTab !== "all" ? activeTab : ""} appointments found
+              </h3>
+              <p className="mt-2 max-w-sm text-center text-sm text-muted-foreground">
+                {activeTab === "pending" || activeTab === "confirmed"
+                  ? "You don't have any upcoming appointments."
+                  : activeTab === "completed"
+                    ? "You don't have any past appointments. Your completed appointments will appear here."
+                    : "You don't have any appointments."}
+              </p>
+            </div>
           )}
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+interface SummaryCardProps {
+  title: string;
+  count: number;
+  icon: React.ReactNode;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+function SummaryCard({ title, count, icon, isActive, onClick }: SummaryCardProps) {
+  return (
+    <Card
+      className={`cursor-pointer transition-all hover:border-primary hover:shadow-md ${
+        isActive ? "border-primary bg-primary/5" : ""
+      }`}
+      onClick={onClick}
+    >
+      <CardContent className="flex items-center justify-between p-6">
+        <div className="flex items-center space-x-4">
+          <div className="rounded-full bg-background p-2 shadow-sm">{icon}</div>
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <h3 className="text-2xl font-bold">{count}</h3>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -144,8 +227,7 @@ function AppointmentCard({ appointment, onConfirm, onCancel }: AppointmentCardPr
             <Badge variant={badgeDetails.variant}>
               {badgeDetails.icon}
               {appointment.status
-                ? appointment.status.charAt(0).toUpperCase() +
-                  appointment.status.slice(1).toLowerCase()
+                ? appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1).toLowerCase()
                 : "Unknown"}
             </Badge>
           </div>
@@ -166,6 +248,7 @@ function AppointmentCard({ appointment, onConfirm, onCancel }: AppointmentCardPr
               </p>
             )}
           </div>
+          <div className="mt-4 border-t border-muted-200 bg-muted/30 pt-2"></div>
         </CardContent>
 
         {appointment.status && !["cancelled"].includes(appointment.status.toLowerCase()) && (
@@ -210,4 +293,41 @@ function AppointmentCard({ appointment, onConfirm, onCancel }: AppointmentCardPr
       />
     </>
   );
+}
+
+function AppointmentCardSkeleton() {
+  return (
+    <Card>
+      <div className="h-2 w-full bg-muted" />
+      <CardHeader className="pb-2">
+        <div className="flex justify-between">
+          <div>
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="mt-2 h-4 w-24" />
+          </div>
+          <Skeleton className="h-6 w-24" />
+        </div>
+      </CardHeader>
+      <CardContent className="pb-4">
+        <div className="mt-2 rounded-lg bg-muted/50 p-3">
+          <div className="mb-2 flex items-center gap-2">
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+        </div>
+        <div className="mt-3">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="mt-1 h-4 w-3/4" />
+        </div>
+      </CardContent>
+      <CardFooter className="border-t bg-muted/30 pt-4">
+        <Skeleton className="h-9 w-full" />
+      </CardFooter>
+    </Card>
+  )
 }

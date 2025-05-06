@@ -73,7 +73,7 @@ export default function AppointmentDetails({
 
   return (
     <Dialog isOpen={open} onClose={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg h-[90vh] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">
             <span>Appointment Details</span>
@@ -90,7 +90,7 @@ export default function AppointmentDetails({
             Failed to load appointment details
           </div>
         ) : (
-          <div className="space-y-6 py-4">
+          <div className="space-y-6 py-4 flex-grow overflow-y-auto">
             {/* Patient & Doctor Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[["Patient", appointment?.patientName], ["Doctor", appointment?.doctorName]].map(
@@ -165,28 +165,61 @@ export default function AppointmentDetails({
               </CardContent>
             </Card>
 
-            {/* Report File */}
-            {!appointment?.testSuggestion && appointment?.medicalReportUrl && (
+            {/* Medical Reports */}
+            {(appointment?.medicalReports?.length ?? 0) > 0 ? (
               <Card className="rounded-2xl shadow-sm border border-gray-200">
                 <CardContent className="pt-6">
-                  <h4 className="text-sm font-medium flex items-center mb-1 text-gray-700">
-                    <FileText className="h-4 w-4 mr-1" /> Report File
-                  </h4>
-                  <a
-                    href={appointment.medicalReportUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline text-sm"
-                  >
-                    View Report
-                  </a>
+                  <h3 className="font-medium text-sm text-gray-600 mb-3">
+                    Medical Reports
+                  </h3>
+                  {appointment?.medicalReports?.map((report, index) => (
+                    <div
+                      key={index}
+                      className="mb-4 last:mb-0 border-b pb-4 last:border-b-0"
+                    >
+                      {report.ReportDescription && (
+                        <div className="mb-2">
+                          <h4 className="text-sm font-medium flex items-center mb-1 text-gray-700">
+                            <FileText className="h-4 w-4 mr-1" /> Description
+                          </h4>
+                          <p className="text-sm bg-gray-50 p-3 rounded-md border">
+                            {report.ReportDescription}
+                          </p>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-medium flex items-center text-gray-700">
+                          <FileText className="h-4 w-4 wyk-1" /> Report #{index + 1}
+                        </h4>
+                        <a
+                          href={report.medicalReportUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-sm"
+                        >
+                          View Report
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="rounded-2xl shadow-sm border border-gray-200">
+                <CardContent className="pt-6 text-center">
+                  <h3 className="font-medium text-sm text-gray-600 mb-3">
+                    Medical Reports
+                  </h3>
+                  <p className="text-sm text-gray-500 italic">
+                    No medical reports available.
+                  </p>
                 </CardContent>
               </Card>
             )}
           </div>
         )}
 
-        <DialogFooter className="mt-6">
+        <DialogFooter className="mt-auto pb-6">
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>

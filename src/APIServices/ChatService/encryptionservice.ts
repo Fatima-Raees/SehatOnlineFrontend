@@ -1,20 +1,33 @@
 // encryption.service.ts
 export class EncryptionService {
-    private keyPair: CryptoKeyPair | null = null;
-    private otherUserPublicKey: CryptoKey | null = null;
-    private userId: number | null = null;
-    private isDoctor: boolean = false;
-    private otherUserId: number | null = null;
-  // 
-    /**
-     * Initialize the encryption service and generate keys
-     */
-    async initialize(userId: number, isDoctor: boolean, otherUserId: number): Promise<void> {
-      this.userId = userId;
-      this.isDoctor = isDoctor;
-      this.otherUserId = otherUserId;
-      
-      // Generate new RSA key pair for asymmetric encryption
+  private keyPair: CryptoKeyPair | null = null;
+  private otherUserPublicKey: CryptoKey | null = null;
+  private userId: number | null = null;
+  private isDoctor: boolean = false;
+  private otherUserId: number | null = null;
+  private initializationPromise: Promise<void> | null = null;
+
+  /**
+   * Initialize the encryption service and generate keys
+   */
+  async initialize(userId: number, isDoctor: boolean, otherUserId: number): Promise<void> {
+    if (this.initializationPromise) {
+      console.log("Encryption service is already initializing...");
+      return this.initializationPromise;
+    }
+
+    console.log(`Initializing encryption service for userId=${userId}, isDoctor=${isDoctor}, otherUserId=${otherUserId}`);
+    this.userId = userId;
+    this.isDoctor = isDoctor;
+    this.otherUserId = otherUserId;
+
+    this.initializationPromise = this._initialize();
+    return this.initializationPromise;
+  }
+
+  private async _initialize(): Promise<void> {
+    try {
+      console.log("Generating RSA key pair...");
       this.keyPair = await window.crypto.subtle.generateKey(
         {
           name: "RSA-OAEP",
@@ -22,41 +35,59 @@ export class EncryptionService {
           publicExponent: new Uint8Array([1, 0, 1]),
           hash: "SHA-256",
         },
-        true, // extractable
-        ["encrypt", "decrypt"] // key usages
+        true,
+        ["encrypt", "decrypt"]
       );
-  
-      // Export the public key in a format that can be sent over the network
-      await this.exportPublicKey();
+      console.log("RSA key pair generated successfully.");
+    } catch (error) {
+      console.error("Error initializing encryption service:", error);
+      this.initializationPromise = null;
+      throw error;
     }
-  
-    /**
-     * Export the public key as a base64 string
-     */
-    async exportPublicKey(): Promise<string> {
-      if (!this.keyPair || !this.keyPair.publicKey) {
-        throw new Error("Key pair not initialized");
-      }
-      
-      const exported = await window.crypto.subtle.exportKey(
-        "spki",
-        this.keyPair.publicKey
-      );
-      
-      // Convert the ArrayBuffer to base64
-      return this.arrayBufferToBase64(exported);
+  }
+
+  /**
+   * Export the public key as a base64 string
+   */
+  async exportPublicKey(): Promise<string> {
+    if (this.initializationPromise) {
+      console.log("Waiting for encryption service initialization to complete...");
+      await this.initializationPromise;
     }
-  
-    /**
-     * Import another user's public key
-     */
-    async importPublicKey(publicKeyBase64: string): Promise<void> {
+
+    if (!this.keyPair || !this.keyPair.publicKey) {
+      throw new Error("Key pair not initialized");
+    }
+
+    try {
+      console.log("Exporting public key...");
+      const exported = await window.crypto.subtle.exportKey("spki", this.keyPair.publicKey);
+      const publicKeyBase64 = this.arrayBufferToBase64(exported);
+      console.log("Public key exported successfully:", publicKeyBase64);
+      return publicKeyBase64;
+    } catch (error) {
+      console.error("Error exporting public key:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Import another user's public key
+   */
+  async importPublicKey(publicKeyBase64: string): Promise<void> {
+    console.log("Importing public key:", publicKeyBase64);
+
+    if (!publicKeyBase64 || publicKeyBase64.trim().length === 0) {
+      throw new Error("Invalid public key provided");
+    }
+
+    try {
       const binaryString = window.atob(publicKeyBase64);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
-      
+
       this.otherUserPublicKey = await window.crypto.subtle.importKey(
         "spki",
         bytes,
@@ -67,81 +98,115 @@ export class EncryptionService {
         true,
         ["encrypt"]
       );
+      console.log("Public key imported successfully.");
+    } catch (error) {
+      console.error("Error importing public key:", error);
+      throw error;
     }
-  
-    /**
-     * Encrypt a message using the other user's public key
-     */
-    async encryptMessage(message: string): Promise<string> {
-      if (!this.otherUserPublicKey) {
-        throw new Error("Other user's public key not set");
-      }
-      
-      // Convert the message to an ArrayBuffer
+  }
+
+  /**
+   * Encrypt a message using the other user's public key
+   */
+  async encryptMessage(message: string): Promise<string> {
+    console.log("Encrypting message:", message);
+
+    if (!this.otherUserPublicKey) {
+      throw new Error("Other user's public key not set");
+    }
+
+    try {
       const encoder = new TextEncoder();
       const data = encoder.encode(message);
-      
-      // Encrypt the data with the other user's public key
+
       const encryptedData = await window.crypto.subtle.encrypt(
         {
-          name: "RSA-OAEP"
+          name: "RSA-OAEP",
         },
         this.otherUserPublicKey,
         data
       );
-      
-      // Convert the encrypted data to a base64 string
-      return this.arrayBufferToBase64(encryptedData);
+
+      const encryptedMessageBase64 = this.arrayBufferToBase64(encryptedData);
+      console.log("Message encrypted successfully:", encryptedMessageBase64);
+      return encryptedMessageBase64;
+    } catch (error) {
+      console.error("Error encrypting message:", error);
+      throw error;
     }
-  
-    /**
-     * Decrypt a message using our private key
-     */
-    async decryptMessage(encryptedMessage: string): Promise<string> {
-      if (!this.keyPair || !this.keyPair.privateKey) {
-        throw new Error("Key pair not initialized");
-      }
-      
-      // Convert the base64 string to an ArrayBuffer
+  }
+
+  /**
+   * Decrypt a message using our private key
+   */
+  async decryptMessage(encryptedMessage: string): Promise<string> {
+    console.log("Decrypting message:", encryptedMessage);
+
+    if (!this.keyPair || !this.keyPair.privateKey) {
+      throw new Error("Key pair not initialized");
+    }
+
+    try {
       const encryptedData = this.base64ToArrayBuffer(encryptedMessage);
-      
-      // Decrypt the data with our private key
       const decryptedData = await window.crypto.subtle.decrypt(
         {
-          name: "RSA-OAEP"
+          name: "RSA-OAEP",
         },
         this.keyPair.privateKey,
         encryptedData
       );
-      
-      // Convert the decrypted data to a string
+
       const decoder = new TextDecoder();
-      return decoder.decode(decryptedData);
+      const decryptedMessage = decoder.decode(decryptedData);
+      console.log("Message decrypted successfully:", decryptedMessage);
+      return decryptedMessage;
+    } catch (error) {
+      console.error("Decryption failed:", error);
+      throw error;
     }
-  
-    /**
-     * Helper method to convert an ArrayBuffer to a base64 string
-     */
-    private arrayBufferToBase64(buffer: ArrayBuffer): string {
-      const binary = String.fromCharCode.apply(null, 
-        new Uint8Array(buffer) as unknown as number[]);
+  }
+
+  /**
+   * Helper method to convert an ArrayBuffer to a base64 string
+   */
+  private arrayBufferToBase64(buffer: ArrayBuffer): string {
+    try {
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
       return window.btoa(binary);
+    } catch (error) {
+      console.error("Error converting ArrayBuffer to base64:", error);
+      throw error;
     }
-  
-    /**
-     * Helper method to convert a base64 string to an ArrayBuffer
-     */
-    private base64ToArrayBuffer(base64: string): ArrayBuffer {
+  }
+
+  /**
+   * Helper method to convert a base64 string to an ArrayBuffer
+   */
+  private base64ToArrayBuffer(base64: string): ArrayBuffer {
+    try {
       const binaryString = window.atob(base64);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
       return bytes.buffer;
+    } catch (error) {
+      console.error("Error converting base64 to array buffer:", error);
+      throw error;
     }
-  
-    // For hybrid encryption (more secure for larger messages)
-    async hybridEncrypt(message: string): Promise<string> {
+  }
+
+  // For hybrid encryption (more secure for larger messages)
+  async hybridEncrypt(message: string): Promise<string> {
+    if (!this.otherUserPublicKey) {
+      throw new Error("Other user's public key not set");
+    }
+    
+    try {
       // Generate a random AES key
       const aesKey = await window.crypto.subtle.generateKey(
         {
@@ -175,7 +240,7 @@ export class EncryptionService {
         {
           name: "RSA-OAEP"
         },
-        this.otherUserPublicKey!,
+        this.otherUserPublicKey,
         exportedAesKey
       );
       
@@ -183,14 +248,23 @@ export class EncryptionService {
       const result = {
         encryptedKey: this.arrayBufferToBase64(encryptedAesKey),
         iv: this.arrayBufferToBase64(iv.buffer),
-        encryptedMessage: this.arrayBufferToBase64(encryptedMessage) // Added this line
+        encryptedMessage: this.arrayBufferToBase64(encryptedMessage)
       };
       
       // Convert to JSON string
       return JSON.stringify(result);
+    } catch (error) {
+      console.error("Error in hybrid encryption:", error);
+      throw error;
+    }
+  }
+  
+  async hybridDecrypt(encryptedPackage: string): Promise<string> {
+    if (!this.keyPair || !this.keyPair.privateKey) {
+      throw new Error("Key pair not initialized");
     }
     
-    async hybridDecrypt(encryptedPackage: string): Promise<string> {
+    try {
       // Parse the JSON string
       const parsedPackage = JSON.parse(encryptedPackage);
       
@@ -204,7 +278,7 @@ export class EncryptionService {
         {
           name: "RSA-OAEP"
         },
-        this.keyPair!.privateKey!,
+        this.keyPair.privateKey,
         encryptedAesKey
       );
       
@@ -233,5 +307,16 @@ export class EncryptionService {
       // Convert the decrypted data to a string
       const decoder = new TextDecoder();
       return decoder.decode(decryptedMessage);
+    } catch (error) {
+      console.error("Error in hybrid decryption:", error);
+      throw error;
     }
   }
+
+  // Check if encryption is ready (keys are generated and exchanged)
+  isReady(): boolean {
+    const ready = !!this.keyPair && !!this.otherUserPublicKey;
+    console.log("Encryption ready status:", ready);
+    return ready;
+  }
+}

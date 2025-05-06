@@ -110,12 +110,14 @@ export const checkDuplicate = async (email: string, cnic: string) => {
           email,
           cnic
       });
+      console.log(response.data);
       return response.data; // { success: true, message: "Email and CNIC are unique." }
   } catch (error: any) {
-      console.error("Error checking duplicates:", error);
+      console.log("Error checking duplicates:",error.response?.data?.errors );
       return {
+        
           success: false,
-          message: "Failed to check duplicates",
+          message: error.response?.data?.errors || "Email or CNIC already exists.",
           errors: error.response?.data?.errors || null
       };
   }

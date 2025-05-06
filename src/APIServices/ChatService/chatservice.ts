@@ -22,6 +22,10 @@ export class ChatService {
   private onConnectionEstablished: () => void;
   private messageQueue: { message: string, callback: (success: boolean) => void }[] = [];
   private isKeyExchangeComplete = false;
+  private connectionPromise: Promise<void> | null = null;
+  private connectionState: 'disconnected' | 'connecting' | 'connected' = 'disconnected';
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 5;
 
   constructor(
     encryptionService: EncryptionService,
@@ -40,60 +44,140 @@ export class ChatService {
   }
 
   async start(): Promise<void> {
-    // Initialize the encryption service first
-    await this.encryptionService.initialize(this.userId, this.isDoctor, this.otherUserId);
+    if (this.connectionPromise) {
+      return this.connectionPromise;
+    }
 
-    // Create the SignalR connection
-    this.hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl(`${API_BASE_URL}/chathub`, {
-      // accessTokenFactory: () => Cookies.get("token") || "" // Ensure a string is always returned
-    }) // Update this to your actual hub URL
-      .withAutomaticReconnect()
-      .build();
+    this.connectionState = 'connecting';
+    
+    this.connectionPromise = this._start();
+    return this.connectionPromise;
+  }
 
-    // Register event handlers
-    this.setupSignalRHandlers();
-
+  private async _start(): Promise<void> {
     try {
+      // Initialize the encryption service first
+      await this.encryptionService.initialize(this.userId, this.isDoctor, this.otherUserId);
+
+      // Create the SignalR connection
+      this.hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl(`${API_BASE_URL}/chathub`, {
+          // accessTokenFactory: () => Cookies.get("token") || ""
+          withCredentials: true
+        })
+        .withAutomaticReconnect([0, 2000, 5000, 10000, 15000]) // Better reconnection strategy
+        .configureLogging(signalR.LogLevel.Information) // Helpful for debugging
+        .build();
+
+      // Register event handlers
+      this.setupSignalRHandlers();
+
       // Start the connection
       await this.hubConnection.start();
       console.log("SignalR connection established");
+
+      // Join the chat
+      await this.hubConnection.invoke("JoinChat", this.userId, this.isDoctor, this.otherUserId);
+
+      // Share our public key
+      const publicKey = await this.encryptionService.exportPublicKey();
+      console.log(publicKey);
+      await this.hubConnection.invoke("SharePublicKey", this.userId, this.isDoctor, this.otherUserId, publicKey);
+
+      // Reset reconnect attempts on successful connection
+      this.reconnectAttempts = 0;
+
+      // Get message history
+      await this.hubConnection.invoke("GetMessageHistory", this.userId, this.isDoctor, this.otherUserId);
+      
+      // Start a timeout to check if key exchange completes
+      this.startKeyExchangeTimeout();
+      
+      return;
     } catch (error) {
-      console.error("Failed to establish SignalR connection:", error);
-      throw error; // Re-throw the error to handle it in the calling code if needed
+      console.error("Failed to establish connection:", error);
+      this.connectionState = 'disconnected';
+      this.connectionPromise = null;
+      
+      // Implement reconnection logic
+      if (this.reconnectAttempts < this.maxReconnectAttempts) {
+        this.reconnectAttempts++;
+        console.log(`Reconnect attempt ${this.reconnectAttempts}...`);
+        
+        // Wait before retry with exponential backoff
+        const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
+        return this.start();
+      }
+      
+      throw error;
     }
+  }
 
-    // Join the chat
-    await this.hubConnection.invoke("JoinChat", this.userId, this.isDoctor, this.otherUserId);
-
-    // Share our public key
-    const publicKey = await this.encryptionService.exportPublicKey();
-    await this.hubConnection.invoke("SharePublicKey", this.userId, this.isDoctor, this.otherUserId, publicKey);
-
-    // Get message history
-    await this.hubConnection.invoke("GetMessageHistory", this.userId, this.isDoctor, this.otherUserId);
+  private startKeyExchangeTimeout() {
+    // If key exchange doesn't complete in 20 seconds, try to force it
+    setTimeout(async () => {
+      if (!this.isKeyExchangeComplete && this.hubConnection?.state === signalR.HubConnectionState.Connected) {
+        console.log("Key exchange timeout - retrying public key share");
+        try {
+          const publicKey = await this.encryptionService.exportPublicKey();
+          await this.hubConnection.invoke("SharePublicKey", this.userId, this.isDoctor, this.otherUserId, publicKey);
+        } catch (error) {
+          console.error("Error during public key reshare:", error);
+        }
+      }
+    }, 20000); // Increased timeout
   }
 
   private setupSignalRHandlers(): void {
     if (!this.hubConnection) return;
 
+    this.hubConnection.onclose((error) => {
+      console.log("SignalR connection closed:", error);
+      this.connectionState = 'disconnected';
+    });
+
+    this.hubConnection.onreconnected(() => {
+      console.log("SignalR connection reestablished.");
+      this.connectionState = 'connected';
+      
+      // Re-share our public key after reconnection
+      this.resendPublicKey();
+      
+      this.onConnectionEstablished();
+    });
+
+    this.hubConnection.onreconnecting((error) => {
+      console.log("SignalR reconnecting:", error);
+      this.connectionState = 'connecting';
+    });
+
     // Handle joining the chat
     this.hubConnection.on("JoinedChat", (userId, isDoctor, otherUserId) => {
       console.log(`Joined chat: ${userId} (${isDoctor ? 'Doctor' : 'Patient'}) with ${otherUserId}`);
+      
+      // Ensure we share our public key
+      this.resendPublicKey();
     });
 
     // Handle receiving public keys
     this.hubConnection.on("ReceivePublicKey", async (userId, isDoctor, publicKey) => {
       console.log(`Received public key from: ${userId} (${isDoctor ? 'Doctor' : 'Patient'})`);
       
-      // If this is the other user's public key, import it
       if ((isDoctor !== this.isDoctor) && (userId === this.otherUserId)) {
-        await this.encryptionService.importPublicKey(publicKey);
-        this.isKeyExchangeComplete = true;
-        this.onConnectionEstablished();
-        
-        // Process any queued messages
-        this.processMessageQueue();
+        try {
+          await this.encryptionService.importPublicKey(publicKey);
+          this.isKeyExchangeComplete = true;
+          this.connectionState = 'connected';
+          console.log("Key exchange completed.");
+          this.onConnectionEstablished();
+
+          // Process any queued messages
+          this.processMessageQueue();
+        } catch (error) {
+          console.error("Error importing public key:", error);
+        }
       }
     });
 
@@ -139,7 +223,8 @@ export class ChatService {
           isSenderDoctor,
           content: decryptedContent,
           messageId,
-          isOwnMessage
+          isOwnMessage,
+          timestamp: new Date()
         };
 
         this.onMessageReceived(message);
@@ -149,15 +234,55 @@ export class ChatService {
     });
   }
 
+  private async resendPublicKey(): Promise<void> {
+    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) return;
+    
+    try {
+      const publicKey = await this.encryptionService.exportPublicKey();
+      console.log(publicKey);
+      await this.hubConnection.invoke("SharePublicKey", this.userId, this.isDoctor, this.otherUserId, publicKey);
+      console.log("Public key shared successfully");
+    } catch (error) {
+      console.error("Error sharing public key:", error);
+    }
+  }
+
   async sendMessage(content: string): Promise<boolean> {
-    if (!this.hubConnection) {
-      console.error("Connection not established");
+    console.log("ChatService: Attempting to send message:", content);
+
+    if (!content.trim()) {
+      console.error("ChatService: Cannot send empty message.");
       return false;
     }
 
+    if (this.connectionState === "connecting") {
+      console.log("ChatService: Connection is still being established. Queuing message.");
+      return new Promise<boolean>((resolve) => {
+        this.messageQueue.push({ message: content, callback: resolve });
+      });
+    }
+
+    if (this.connectionState === "disconnected") {
+      console.log("ChatService: Connection is disconnected. Attempting to reconnect.");
+      try {
+        await this.start();
+      } catch (error) {
+        console.error("ChatService: Failed to reconnect:", error);
+        return false;
+      }
+    }
+
+    if (!this.hubConnection || !this.isKeyExchangeComplete) {
+      console.error(
+        "ChatService: Cannot send message. Connection is not established or key exchange is incomplete."
+      );
+      return false;
+    }
+
+    console.log("ChatService: Encrypting and sending message.");
     return new Promise<boolean>((resolve) => {
       if (!this.isKeyExchangeComplete) {
-        // Queue the message to be sent after key exchange
+        console.log("ChatService: Key exchange not complete. Queuing message.");
         this.messageQueue.push({ message: content, callback: resolve });
         return;
       }
@@ -186,15 +311,7 @@ export class ChatService {
         encryptedContent
       );
 
-      // Immediately notify UI about the message (no need to wait for it to come back)
-      this.onMessageReceived({
-        senderId: this.userId,
-        isSenderDoctor: this.isDoctor,
-        content: content, // Use unencrypted content for our own messages
-        messageId: 0, // This will be updated when the server confirms
-        isOwnMessage: true
-      });
-
+      // Notify the callback of success
       callback(true);
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -203,6 +320,10 @@ export class ChatService {
   }
 
   private async processMessageQueue(): Promise<void> {
+    if (this.messageQueue.length > 0) {
+      console.log(`Processing ${this.messageQueue.length} queued messages`);
+    }
+    
     while (this.messageQueue.length > 0) {
       const { message, callback } = this.messageQueue.shift()!;
       await this.encryptMessageAndSend(message, callback);
@@ -211,9 +332,20 @@ export class ChatService {
 
   async stop(): Promise<void> {
     if (this.hubConnection) {
+      this.connectionState = 'disconnected';
+      this.connectionPromise = null;
       await this.hubConnection.stop();
       this.hubConnection = null;
     }
   }
   
+  // Getter for connection state
+  getConnectionState(): 'disconnected' | 'connecting' | 'connected' {
+    return this.connectionState;
+  }
+  
+  // Getter for key exchange status
+  isKeyExchangeCompleted(): boolean {
+    return this.isKeyExchangeComplete;
+  }
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { EncryptionService } from "../../APIServices/ChatService/encryptionservice";
 import { ChatService, Message } from "../../APIServices/ChatService/chatservice";
-import { Card, CardHeader, CardFooter, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { Send, Loader2, Lock, UserPlus, AlertCircle, RefreshCw } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import Cookies from "js-cookie";
 
 interface ChatProps {
@@ -24,89 +24,71 @@ interface ChatProps {
 interface Contact {
   id: number;
   name: string;
-  lastActivity?: Date;
   lastAppointment?: Date;
   appointmentStatus?: string;
   hasChatHistory: boolean;
-  specialization?: string;
-  unreadCount?: number;
 }
 
 let tempMessageIdCounter = -1;
 
-const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserName }) => {
+const Chat: React.FC<ChatProps> = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [connectionState, setConnectionState] = useState<"disconnected" | "connecting" | "connected">("disconnected");
   const [isSending, setIsSending] = useState(false);
-  const [activeTab, setActiveTab] = useState("chats");
-  const [contacts, setContacts] = useState<Contact[]>([]);
   const [appointmentContacts, setAppointmentContacts] = useState<Contact[]>([]);
-  const [selectedContact, setSelectedContact] = useState<number>(otherUserId);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [failedMessages, setFailedMessages] = useState<Set<number>>(new Set());
 
   const chatServiceRef = useRef<ChatService | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messageContainerRef = useRef<HTMLDivElement>(null);
-  const shouldScrollToBottomRef = useRef<boolean>(true);
   const API_BASE = process.env.NEXT_PUBLIC_API_Base_URL;
-  userId = parseInt(Cookies.get("PersonID") || "0", 10);
-  isDoctor = Cookies.get("role") === "Doctor" ? true : false;
+  const userId = parseInt(Cookies.get("PersonID") || "0", 10);
+  const isDoctor = Cookies.get("role") === "Doctor";
   const { toast } = useToast();
+  
+  // Fetch appointment contacts
+  useEffect(() => {
+    const fetchAppointmentContacts = async () => {
+      try {
+        const endpoint = isDoctor
+          ? `${API_BASE}/Chats/appointments/doctor/${userId}`
+          : `${API_BASE}/Chats/appointments/patient/${userId}`;
 
-  const fetchContacts = useCallback(async (type: "sessions" | "appointments") => {
-    try {
-      setErrorMessage(null);
-      const endpoint = isDoctor
-        ? `${API_BASE}/Chats/${type}/doctor/${userId}`
-        : `${API_BASE}/Chats/${type}/patient/${userId}`;
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch appointment contacts: ${response.status}`);
+        }
 
-      const response = await fetch(endpoint);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${type} contacts: ${response.status}`);
-      }
+        const data = await response.json();
+        const formattedContacts = data.map((contact: any) => ({
+          id: isDoctor ? contact.patientId : contact.doctorId,
+          name: isDoctor ? contact.patientName : contact.doctorName,
+          lastAppointment: contact.lastAppointment ? new Date(contact.lastAppointment) : undefined,
+          appointmentStatus: contact.appointmentStatus,
+          hasChatHistory: Boolean(contact.hasChatHistory),
+        }));
 
-      const data = await response.json();
-      const formattedContacts = data.map((contact: any) => ({
-        id: isDoctor ? contact.patientId : contact.doctorId,
-        name: isDoctor ? contact.patientName : contact.doctorName,
-        lastActivity: type === "sessions" && contact.lastActivity ? new Date(contact.lastActivity) : undefined,
-        lastAppointment: type === "appointments" && contact.lastAppointment ? new Date(contact.lastAppointment) : undefined,
-        appointmentStatus: type === "appointments" ? contact.appointmentStatus : undefined,
-        unreadCount: type === "sessions" ? contact.unreadCount : undefined,
-        specialization: !isDoctor ? contact.specialization : undefined,
-        hasChatHistory: Boolean(contact.hasChatHistory),
-      }));
-
-      if (type === "sessions") {
-        setContacts(formattedContacts);
-        console.log("Fetched session contacts:", formattedContacts);
-      } else {
         setAppointmentContacts(formattedContacts);
-        console.log("Fetched appointment contacts:", formattedContacts);
+      } catch (error) {
+        console.error("Failed to fetch appointment contacts:", error);
+        setErrorMessage("Unable to load contacts. Please try again.");
+        toast({
+          variant: "destructive",
+          title: "Error loading contacts",
+          description: "Failed to fetch appointment contacts. Please refresh.",
+        });
       }
-    } catch (error) {
-      console.error(`Failed to fetch ${type} contacts:`, error);
-      setErrorMessage(`Unable to load contacts. Please try again.`);
-      toast({
-        variant: "destructive",
-        title: "Error loading contacts",
-        description: `Failed to fetch ${type} contacts. Please refresh.`,
-      });
-    }
+    };
+
+    fetchAppointmentContacts();
   }, [API_BASE, userId, isDoctor, toast]);
 
-  useEffect(() => {
-    fetchContacts("sessions");
-    fetchContacts("appointments");
-  }, [fetchContacts]);
-
+  // Initialize chat service
   useEffect(() => {
     let isMounted = true;
     setConnectionState("connecting");
     setMessages([]);
-    setFailedMessages(new Set());
     setErrorMessage(null);
 
     const initializeChat = async () => {
@@ -153,7 +135,6 @@ const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserNam
         };
 
         const handleConnectionEstablished = () => {
-          if (!isMounted) return;
           setConnectionState("connected");
         };
 
@@ -161,10 +142,11 @@ const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserNam
           encryptionService,
           userId,
           isDoctor,
-          selectedContact,
+          selectedContact?.id || 0,
           handleMessageReceived,
           handleConnectionEstablished
         );
+        console.log(chatService);
 
         await chatService.start();
 
@@ -202,15 +184,32 @@ const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserNam
     };
   }, [userId, isDoctor, selectedContact, toast]);
 
+  // Scroll to bottom when messages change
   useEffect(() => {
-    if (shouldScrollToBottomRef.current && messagesEndRef.current) {
+    if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !chatServiceRef.current || connectionState !== "connected") return;
+
+    console.log("Attempting to send message:", newMessage);
+
+    if (!newMessage.trim()) {
+      console.error("Message is empty. Cannot send.");
+      return;
+    }
+
+    if (!chatServiceRef.current) {
+      console.error("ChatService is not initialized.");
+      return;
+    }
+
+    if (connectionState !== "connected") {
+      console.error("Connection is not established. Current state:", connectionState);
+      return;
+    }
 
     const messageContent = newMessage.trim();
     setNewMessage("");
@@ -226,69 +225,27 @@ const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserNam
       timestamp: new Date(),
     };
 
+    console.log("Adding temporary message to UI:", tempMessage);
     setMessages((prevMessages) => [...prevMessages, tempMessage]);
 
     try {
+      console.log("Sending message via ChatService:", messageContent);
       const success = await chatServiceRef.current.sendMessage(messageContent);
 
       if (!success) {
-        setFailedMessages((prev) => new Set(prev).add(tempMessageId));
+        console.error("Message failed to send.");
         toast({
           variant: "destructive",
           title: "Message not sent",
           description: "Failed to send message. Tap to retry.",
-          action: (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleRetryMessage(tempMessageId, messageContent)}
-            >
-              <RefreshCw className="h-4 w-4 mr-1" /> Retry
-            </Button>
-          ),
         });
+      } else {
+        console.log("Message sent successfully.");
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      setFailedMessages((prev) => new Set(prev).add(tempMessageId));
     } finally {
       setIsSending(false);
-    }
-  };
-
-  const handleRetryMessage = async (messageId: number, content: string) => {
-    if (!chatServiceRef.current || connectionState !== "connected") {
-      toast({
-        variant: "destructive",
-        title: "Not connected",
-        description: "Please wait until connection is established.",
-      });
-      return;
-    }
-
-    try {
-      const success = await chatServiceRef.current.sendMessage(content);
-
-      if (success) {
-        setFailedMessages((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(messageId);
-          return newSet;
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Retry failed",
-          description: "Could not send message. Please try again later.",
-        });
-      }
-    } catch (error) {
-      console.error("Error retrying message:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-      });
     }
   };
 
@@ -297,31 +254,10 @@ const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserNam
       {/* Sidebar */}
       <div className="w-1/3 border-r flex flex-col">
         <CardHeader className="p-4">
-          <Tabs defaultValue="chats" className="w-full" onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 w-full">
-              <TabsTrigger value="chats">Chats</TabsTrigger>
+          <Tabs defaultValue="appointments" className="w-full">
+            <TabsList className="grid grid-cols-1 w-full">
               <TabsTrigger value="appointments">Appointments</TabsTrigger>
             </TabsList>
-            <TabsContent value="chats" className="m-0">
-              <ScrollArea className="h-[calc(80vh-120px)]">
-                {contacts.map((contact) => (
-                  <div
-                    key={contact.id}
-                    onClick={() => setSelectedContact(contact.id)}
-                    className={`p-3 flex items-center gap-3 hover:bg-muted cursor-pointer transition-colors ${
-                      selectedContact === contact.id ? "bg-muted" : ""
-                    }`}
-                  >
-                    <Avatar>
-                      <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{contact.name}</p>
-                    </div>
-                  </div>
-                ))}
-              </ScrollArea>
-            </TabsContent>
             <TabsContent value="appointments" className="m-0">
               <ScrollArea className="h-[calc(80vh-120px)]">
                 {appointmentContacts.length === 0 ? (
@@ -332,9 +268,9 @@ const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserNam
                   appointmentContacts.map((contact) => (
                     <div
                       key={contact.id}
-                      onClick={() => setSelectedContact(contact.id)}
+                      onClick={() => setSelectedContact(contact)}
                       className={`p-3 flex items-center gap-3 hover:bg-muted cursor-pointer transition-colors ${
-                        selectedContact === contact.id ? "bg-muted" : ""
+                        selectedContact?.id === contact.id ? "bg-muted" : ""
                       }`}
                     >
                       <Avatar>
@@ -362,10 +298,10 @@ const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserNam
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         <CardHeader className="p-4 flex flex-row items-center border-b">
-          <h3 className="font-medium">{otherUserName}</h3>
+          <h3 className="font-medium">{selectedContact?.name || "Select a contact"}</h3>
         </CardHeader>
 
-        <ScrollArea className="flex-1 p-4" ref={messageContainerRef}>
+        <ScrollArea className="flex-1 p-4">
           {messages.map((message) => (
             <div key={message.messageId} className="flex">
               <div className="max-w-xs px-4 py-2 rounded-lg bg-muted">
@@ -385,7 +321,7 @@ const Chat: React.FC<ChatProps> = ({ userId, isDoctor, otherUserId, otherUserNam
               disabled={isSending}
               className="flex-1"
             />
-            <Button type="submit" disabled={!newMessage.trim() || isSending}>
+            <Button type="submit" disabled={!newMessage.trim() || isSending || connectionState !== "connected"}>
               {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </form>

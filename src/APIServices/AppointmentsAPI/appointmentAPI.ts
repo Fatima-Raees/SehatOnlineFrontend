@@ -1,6 +1,11 @@
 
 // APIServices/Appointment/appointmentAPI.ts
 import axios from 'axios';
+import Cookies from "js-cookie";
+const token= Cookies.get("token")
+  if (!token) {
+    console.error("Token not found")
+  }
 const API_BASE = process.env.NEXT_PUBLIC_API_Base_URL
 //  || "https://localhost:7259/api"
 interface AppointmentData {
