@@ -54,10 +54,11 @@ export default function LoginPage() {
       const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
       console.log(PersonID, userRole);
 
-      //Cookies.set("token", token, { expires: 1 });
-      Cookies.set("role", userRole, { expires: 1 });
-      Cookies.set("PersonID", PersonID, { expires: 1 });
-      Cookies.set("loggedIn", "true", { expires: 1 });
+      const expirationTime = new Date(new Date().getTime() + 60 * 60 * 1000); // 60 minutes from now
+      Cookies.set("token", token, { expires: expirationTime });
+      Cookies.set("role", userRole, { expires: expirationTime });
+      Cookies.set("PersonID", PersonID, { expires: expirationTime });
+      Cookies.set("loggedIn", "true", { expires: expirationTime });
       alert("Login successful!");
 
       const roleRedirects: Record<string, string> = {
