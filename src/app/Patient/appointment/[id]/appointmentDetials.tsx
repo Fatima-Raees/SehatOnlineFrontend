@@ -36,7 +36,12 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function AppointmentDetailsPage({ params }: { params: { id: string } }) {
+// Update the params type definition
+interface PageParams {
+  id: string;
+}
+
+export default function AppointmentDetailsPage({ params }: { params: PageParams }) {
   const router = useRouter()
   const appointmentId = Number.parseInt(params.id)
   const [file, setFile] = useState<File | null>(null)
