@@ -8,7 +8,7 @@ interface IntentRequest {
     symptomScore: number;
   }
   
-  // Export handler function for direct import
+ 
   export async function handler(req: { method: string; body: IntentRequest }, res: { status: (code: number) => { json: (data: any) => void } }) {
     if (req.method !== 'POST') {
       return res.status(405).json({ message: 'Method not allowed' });
@@ -27,15 +27,49 @@ interface IntentRequest {
       
       // Define keyword sets with weights for more accurate intent detection
       const appointmentKeywords = {
-        high: ['appointment', 'schedule', 'book', 'doctor', 'visit', 'meet'],
-        medium: ['available', 'slot', 'time', 'date', 'calendar', 'consultation'],
-        low: ['when', 'need to see', 'hours', 'office', 'clinic', 'hospital']
+        high: [
+          'appointment', 'schedule', 'book', 'doctor', 'visit', 'meet',
+          'urgent', 'emergency', 'reschedule', 'cancel', 'confirm', 
+          'reservation', 'booking', 'consultation', 'checkup', 'follow-up',
+          'appointment request', 'see doctor', 'medical visit', 'specialist'
+        ],
+        medium: [
+          'available', 'slot', 'time', 'date', 'calendar', 'consultation',
+          'availability', 'opening', 'session', 'appointment time', 
+          'appointment date', 'next available', 'earliest', 'upcoming',
+          'regular visit', 'routine checkup', 'virtual appointment', 
+          'telehealth', 'video call', 'in-person', 'office hours'
+        ],
+        low: [
+          'when', 'need to see', 'hours', 'office', 'clinic', 'hospital',
+          'healthcare', 'provider', 'practice', 'medical center', 'facility',
+          'reception', 'front desk', 'waiting room', 'patient portal',
+          'medical record', 'insurance', 'copay', 'registration',
+          'paperwork', 'new patient', 'returning patient', 'walk-in'
+        ]
       };
       
       const symptomKeywords = {
-        high: ['pain', 'hurt', 'sick', 'fever', 'cough', 'symptom'],
-        medium: ['headache', 'nausea', 'vomiting', 'diarrhea', 'rash', 'sore'],
-        low: ['feeling', 'tired', 'fatigue', 'dizzy', 'swollen', 'ache']
+        high: [
+          'pain', 'hurt', 'sick', 'fever', 'cough', 'symptom', 'emergency', 
+          'severe', 'acute', 'intense', 'unbearable', 'excruciating', 
+          'shortness of breath', 'chest pain', 'bleeding', 'unconscious', 
+          'seizure', 'collapse', 'stroke', 'heart attack', 'trauma', 'critical'
+        ],
+        medium: [
+          'headache', 'nausea', 'vomiting', 'diarrhea', 'rash', 'sore',
+          'infection', 'inflammation', 'swelling', 'congestion', 'migraine',
+          'cramps', 'persistent', 'discomfort', 'burning', 'joint pain',
+          'muscle pain', 'stiffness', 'allergic reaction', 'bruising',
+          'moderate', 'recurring', 'sprain', 'strain'
+        ],
+        low: [
+          'feeling', 'tired', 'fatigue', 'dizzy', 'swollen', 'ache',
+          'mild', 'occasional', 'tenderness', 'itching', 'tickle', 'sniffle',
+          'runny nose', 'stuffy', 'dry skin', 'minor', 'slight', 'temporary',
+          'lethargy', 'drowsiness', 'weakness', 'malaise', 'bloating',
+          'irritation', 'sensitivity', 'discoloration'
+        ]
       };
       
       let appointmentScore = 0;
@@ -70,7 +104,7 @@ interface IntentRequest {
       
       // Check for special case - zero scores
       if (appointmentScore === 0 && symptomScore === 0) {
-        // User input contains no keywords we recognize
+       
         intent = 'unknown';
       } else if (appointmentScore > symptomScore) {
         intent = 'appointment';
@@ -94,5 +128,5 @@ interface IntentRequest {
     }
   }
   
-  // Default export for Next.js API routes
+ 
   export default handler;
