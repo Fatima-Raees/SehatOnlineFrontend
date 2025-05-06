@@ -30,7 +30,7 @@ interface AppointmentDTO {
 
 export default function AppointmentsPage() {
   const [activeTab, setActiveTab] = useState("all")
-  const personId = "7" // TODO: Replace with dynamic value (e.g., from auth context or user session)
+  const personId = "14" // TODO: Replace with dynamic value (e.g., from auth context or user session)
   const parsedPersonId = Number(personId)
 
   const {

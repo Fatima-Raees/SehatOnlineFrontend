@@ -138,6 +138,7 @@ export default function AppointmentDetails({
                 )}
 
                 {appointment?.testSuggestion && (
+                  console.log("mb-4"),
                   <div className="mb-4">
                     <h4 className="text-sm font-medium flex items-center mb-1 text-gray-700">
                       <BarChart className="h-4 w-4 mr-1" /> Test Suggestion

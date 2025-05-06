@@ -23,7 +23,7 @@ import type { BadgeProps } from "@/components/ui/badge";
 export default function AppointmentsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const queryClient = useQueryClient();
-  const personId = "5"; 
+  const personId = "13"; 
   const parsedPersonId = Number(personId);
 
   const {
