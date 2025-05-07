@@ -24,7 +24,7 @@ const testimonials = [
   {
     name: "Fatima Noor",
     location: "PESHAWAR, PAKISTAN",
-    image: "/Profiles/landing-page/p4.webp",
+    image: "/profiles/landing-page/p4.webp",
     text: "Thanks to Sehat Online, I can consult with top specialists without leaving my home. The support team is also fantastic and very responsive."
   }
 ];
