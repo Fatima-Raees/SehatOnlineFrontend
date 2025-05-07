@@ -6,25 +6,25 @@ const testimonials = [
   {
     name: "Ahmed Khan, Pvt Ltd",
     location: "LAHORE, PAKISTAN",
-    image: "/profiles/landing-page/p1.webp",
+    image: "/Profiles/landing-page/p1.webp",
     text: "Sehat Online has completely transformed the way I manage my health. The convenience of online consultations and expert medical advice has been invaluable in managing my well-being from home."
   },
   {
     name: "Sara Ali",
     location: "ISLAMABAD, PAKISTAN",
-    image: "/profiles/landing-page/p3.webp",
+    image: "/Profiles/landing-page/p3.webp",
     text: "I was initially hesitant about online healthcare, but Sehat Online changed my perception. The doctors are professional, and the platform is incredibly user-friendly."
   },
   {
     name: "Omar Zaid",
     location: "KARACHI, PAKISTAN",
-    image: "/profiles/p3.jpg",
+    image: "/Profiles/p3.jpg",
     text: "Sehat Online has made healthcare so easy for me. Booking appointments, receiving prescriptions, and getting follow-ups have never been this smooth!"
   },
   {
     name: "Fatima Noor",
     location: "PESHAWAR, PAKISTAN",
-    image: "/profiles/landing-page/p4.webp",
+    image: "/Profiles/landing-page/p4.webp",
     text: "Thanks to Sehat Online, I can consult with top specialists without leaving my home. The support team is also fantastic and very responsive."
   }
 ];
