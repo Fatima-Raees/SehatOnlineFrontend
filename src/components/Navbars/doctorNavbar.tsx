@@ -15,28 +15,21 @@ const DoctorNavbar = () => {
 
         {/* Navigation Links */}
         <div className="hidden md:flex space-x-6">
-          <Link href="/" className="text-gray-700 hover:text-blue-600">
-            Home
+          <Link href="/Doctor/dashboard" className="text-gray-700 hover:text-blue-600">
+            Dashboard
           </Link>
 
           {/* View Doctors Button (replacing dropdown) */}
-          <Link href="/doctors" className="text-gray-700 hover:text-blue-600">
-            View Doctors
-          </Link>
-
-          <Link href="/reports" className="text-gray-700 hover:text-blue-600">
-            Medical Reports
+          <Link href="/Doctor/appointments" className="text-gray-700 hover:text-blue-600">
+            View Patients
           </Link>
 
           <Link href="/chat" className="text-gray-700 hover:text-blue-600">
             Chat
           </Link>
-          <Link href="#" className="text-gray-700 hover:text-blue-600">
-            Blog
-          </Link>
-          <Link href="/about-us" className="text-gray-700 hover:text-blue-600">
-            About Us
-          </Link>
+          <Link href="/notification" className="text-gray-700 hover:text-blue-600">
+                          Notification
+                        </Link>
          
         </div>
 

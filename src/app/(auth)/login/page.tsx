@@ -8,6 +8,7 @@ import Link from "next/link";
 import { loginUser ,sendOTP} from "../../../APIServices/users/usersAPI";
 import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { cookies } from "next/headers";
 
 interface CustomJwtPayload extends JwtPayload {
   sub: string;
@@ -15,11 +16,16 @@ interface CustomJwtPayload extends JwtPayload {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isDoctor, setIsDoctor] = useState(false);
   const [email, setEmail] = useState("");
   // Removed unused router
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [notification, setNotification] = useState<{
+      type: "error" | "success" | "info" | "warning"
+      message: string
+    } | null>(null)
 
   const isValidTokenStructure = (decodedToken: CustomJwtPayload): boolean => {
     return (
@@ -35,7 +41,7 @@ export default function LoginPage() {
       setError("");
 
       const response = await loginUser(email, password);
-      console.log(response);
+      //console.log(response);
 
       if (!response.success) {
         setError(response.data?.message || "Login failed. Please try again.");
@@ -46,28 +52,48 @@ export default function LoginPage() {
       if (!token) throw new Error("Token not found");
 
       const decodedToken = jwtDecode<CustomJwtPayload>(token);
-      console.log("Decoded JWT:", decodedToken);
+      //console.log("Decoded JWT:", decodedToken);
 
       if (!isValidTokenStructure(decodedToken)) throw new Error("Invalid token structure");
 
       const PersonID = decodedToken.sub;
       const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-      console.log(PersonID, userRole);
+      //console.log(PersonID, userRole);
 
       const expirationTime = new Date(new Date().getTime() + 60 * 60 * 1000); // 60 minutes from now
       Cookies.set("token", token, { expires: expirationTime });
       Cookies.set("role", userRole, { expires: expirationTime });
       Cookies.set("PersonID", PersonID, { expires: expirationTime });
       Cookies.set("loggedIn", "true", { expires: expirationTime });
-      alert("Login successful!");
-
-      const roleRedirects: Record<string, string> = {
-        Doctor: "/Doctor/dashboard",
-        Admin: "/Admin/dashboard",
-        Patient: "/",
-      };
+      Cookies.set("Email", email, { expires: expirationTime });
+       Cookies.set("otpFlow", "login")
+       const emailFromCookies = (await cookies()).get("Email")?.value;
+      if (!emailFromCookies) {
+        setNotification({
+          type: "error",
+          message: "Email not found in cookies. Please try again.",
+        });
+        return;
+      }
+      const otpResponse = await sendOTP(emailFromCookies);
+            if (!otpResponse.success) {
+              setNotification({
+                type: "error",
+                message: otpResponse.message || "Failed to send OTP. Please try again.",
+              })
+              return
+            }
+      setNotification({
+        type: "success",
+        message: "OTP has been sent to your email. Redirecting to verification page...",
+      })
+      
+      setTimeout(() => {
+        router.push("/ConfirmationCode")
+      }, 2000)
+     
       console.log(userRole);
-      window.location.href = roleRedirects[userRole] || "/";
+      
     } catch (err) {
       console.error(err);
       setError("Invalid email or password.");

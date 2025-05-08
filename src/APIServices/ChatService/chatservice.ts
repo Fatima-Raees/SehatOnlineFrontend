@@ -3,6 +3,8 @@ import * as signalR from "@microsoft/signalr";
 import { EncryptionService } from "./encryptionservice";
 import Cookies from "js-cookie";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_Base_URL_FOR_SERVICE;
+const token= Cookies.get("token")
+
 export interface Message {
   senderId: number;
   isSenderDoctor: boolean;

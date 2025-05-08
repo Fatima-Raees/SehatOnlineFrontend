@@ -66,7 +66,7 @@ export default function DoctorProfilePage({ params }: { params: Promise<{ id: st
       // Call API to book appointment
       const response = await bookAppointment(appointmentData)
       if (response.success) {
-        router.push("/appointments")  // Redirect to appointments page on success
+        router.push("Patient/appointment")  // Redirect to appointments page on success
       } else {
         setError("Failed to book the appointment. Please try again.")
       }

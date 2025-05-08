@@ -1,5 +1,8 @@
 import axios from 'axios';
+import Cookies from "js-cookie";
 const api_base_url = process.env.NEXT_PUBLIC_API_Base_URL
+const token= Cookies.get("token")
+
 export const fetchDashboardData = async (personId: number, date: string) => {
   try {
     console.log('Fetching dashboard data for personId:', personId, 'on date:', date); 
@@ -7,7 +10,10 @@ export const fetchDashboardData = async (personId: number, date: string) => {
       `${api_base_url}/Notifications/dashboard`,
       { personId, date }, // fixed typo and added comma
       {
-        withCredentials: true,
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       }
     );
 

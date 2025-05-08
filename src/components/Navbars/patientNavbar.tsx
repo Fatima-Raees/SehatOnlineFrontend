@@ -50,12 +50,20 @@ const PatientNavbar = () => {
               <Link href="/doctors" className="text-gray-700 hover:text-blue-600">
                 View Doctors
               </Link>
+              <Link href="/Patient/appointment" className="text-gray-700 hover:text-blue-600">
+                Appointments
+              </Link>
+
               <Link href="/chat" className="text-gray-700 hover:text-blue-600">
                 Chat
+              </Link>
+              <Link href="/c" className="text-gray-700 hover:text-blue-600">
+               ChatBot
               </Link>
               <Link href="/notification" className="text-gray-700 hover:text-blue-600">
                 Notification
               </Link>
+
              
             </>
           ) : (

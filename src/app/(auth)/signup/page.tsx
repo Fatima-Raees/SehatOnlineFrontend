@@ -260,7 +260,7 @@ if (!password) {
           }`}
         >
           <h1 className="text-2xl font-semibold text-[#0A192F]">Patient Sign Up</h1>
-          <button
+          {/* <button
             type="button"
             className="p-2 border rounded-lg w-48 flex items-center justify-center space-x-2 hover:bg-gray-100 transition mt-3"
           >
@@ -273,7 +273,7 @@ if (!password) {
               <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"></path>
             </svg>
             <span className="text-sm font-medium">Continue with Google</span>
-          </button>
+          </button> */}
           <span className="text-sm text-gray-600 mt-2">or use your email to register</span>
 
           <FormField name="name" errors={errors.name}>
@@ -380,7 +380,7 @@ if (!password) {
           }`}
         >
           <h1 className="text-2xl font-semibold text-[#0A192F]">Doctor Sign Up</h1>
-          <button
+          {/* <button
             type="button"
             className="p-2 border rounded-lg w-48 flex items-center justify-center space-x-2 hover:bg-gray-100 transition mt-3"
           >
@@ -393,7 +393,7 @@ if (!password) {
               <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"></path>
             </svg>
             <span className="text-sm font-medium">Continue with Google</span>
-          </button>
+           </button> */}
           <span className="text-sm text-gray-600 mt-2">or use your email to register</span>
 
           <FormField name="name" errors={errors.name}>

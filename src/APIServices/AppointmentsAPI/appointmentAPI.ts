@@ -18,7 +18,11 @@ interface AppointmentData {
 export const bookAppointment = async (appointmentData: AppointmentData) => {
   try {
     console.log(appointmentData);
-    const response = await axios.post(`${API_BASE}/Appointment/ScheduleAppointment`, appointmentData);
+    const response = await axios.post(`${API_BASE}/Appointment/ScheduleAppointment`, appointmentData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;  // The response should contain a success message or status
   } catch (error) {
     console.error('Error booking appointment:', error);
