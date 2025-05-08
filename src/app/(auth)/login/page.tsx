@@ -8,6 +8,7 @@ import Link from "next/link";
 import { loginUser ,sendOTP} from "../../../APIServices/users/usersAPI";
 import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { cookies } from "next/headers";
 
 interface CustomJwtPayload extends JwtPayload {
   sub: string;
@@ -64,8 +65,24 @@ export default function LoginPage() {
       Cookies.set("role", userRole, { expires: expirationTime });
       Cookies.set("PersonID", PersonID, { expires: expirationTime });
       Cookies.set("loggedIn", "true", { expires: expirationTime });
+      Cookies.set("Email", email, { expires: expirationTime });
        Cookies.set("otpFlow", "login")
-      alert("Login successful!");
+       const emailFromCookies = (await cookies()).get("Email")?.value;
+      if (!emailFromCookies) {
+        setNotification({
+          type: "error",
+          message: "Email not found in cookies. Please try again.",
+        });
+        return;
+      }
+      const otpResponse = await sendOTP(emailFromCookies);
+            if (!otpResponse.success) {
+              setNotification({
+                type: "error",
+                message: otpResponse.message || "Failed to send OTP. Please try again.",
+              })
+              return
+            }
       setNotification({
         type: "success",
         message: "OTP has been sent to your email. Redirecting to verification page...",
