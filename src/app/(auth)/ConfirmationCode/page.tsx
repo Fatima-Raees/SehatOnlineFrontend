@@ -110,7 +110,7 @@ export default function OTPVerification() {
     try {
       const response = await verifyOTP(email, otp)
       if (response.success) {
-        const flow = Cookies.get("otpflow")
+        const flow = Cookies.get("otpFlow")
         const userRole = Cookies.get("role")
 
         if (flow === "signup") {
@@ -127,12 +127,12 @@ export default function OTPVerification() {
         } else if (flow === "login") {
           setMessage("Verification successful! Redirecting...")
           setTimeout(() => {
-            if (userRole === "doctor") {
+            if (userRole === "Doctor") {
               router.push("/Doctor/dashboard")
-            } else if (userRole === "admin") {
+            } else if (userRole === "Admin") {
               router.push("/Admin/dashboard")
-            } else if (userRole === "patient") {
-              router.push("/Patient/dashboard")
+            } else if (userRole === "Patient") {
+              router.push("/")
             }
           }, 1500)
         }

@@ -1,5 +1,8 @@
 import axios from 'axios';
+import Cookies from "js-cookie";
 const api_base_url = process.env.NEXT_PUBLIC_API_Base_URL 
+const token= Cookies.get("token")
+
 // 'https://localhost:7259/api'; // Fallback to localhost
 export const addPlan = async (planData: {
   PlanName: string;
@@ -13,6 +16,8 @@ export const addPlan = async (planData: {
       method: "POST",  
       headers: {
         'Content-Type': 'application/json',
+         Authorization: `Bearer ${token}`,
+
       },
     });
     console.log(response);
@@ -29,6 +34,7 @@ export const getAllPlans = async () => {
       method: "GET",
       headers: {
         'Content-Type': 'application/json',
+         Authorization: `Bearer ${token}`,
       },
     });
     const data = await response.data;

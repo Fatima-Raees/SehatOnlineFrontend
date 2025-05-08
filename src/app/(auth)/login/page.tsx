@@ -40,7 +40,7 @@ export default function LoginPage() {
       setError("");
 
       const response = await loginUser(email, password);
-      console.log(response);
+      //console.log(response);
 
       if (!response.success) {
         setError(response.data?.message || "Login failed. Please try again.");
@@ -51,13 +51,13 @@ export default function LoginPage() {
       if (!token) throw new Error("Token not found");
 
       const decodedToken = jwtDecode<CustomJwtPayload>(token);
-      console.log("Decoded JWT:", decodedToken);
+      //console.log("Decoded JWT:", decodedToken);
 
       if (!isValidTokenStructure(decodedToken)) throw new Error("Invalid token structure");
 
       const PersonID = decodedToken.sub;
       const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-      console.log(PersonID, userRole);
+      //console.log(PersonID, userRole);
 
       const expirationTime = new Date(new Date().getTime() + 60 * 60 * 1000); // 60 minutes from now
       Cookies.set("token", token, { expires: expirationTime });
@@ -70,7 +70,7 @@ export default function LoginPage() {
         type: "success",
         message: "OTP has been sent to your email. Redirecting to verification page...",
       })
-
+      
       setTimeout(() => {
         router.push("/ConfirmationCode")
       }, 2000)

@@ -66,7 +66,11 @@ export const getAppointmentsByDoctor = async (
   request: AppointmentResponse
 ): Promise<AppointmentDTO[]> => {
   try {
-    const response = await api.post("/Appointment/person", request);
+    const response = await api.post("/Appointment/person", request, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Failed to fetch appointments:", error);
@@ -78,7 +82,11 @@ export const getAppointmentsByStatusAndDoctor = async (
   request: AppointmentResponse
 ): Promise<AppointmentDTO[]> => {
   try {
-    const response = await api.post("/Appointment/person/status/", request);
+    const response = await api.post("/Appointment/person/status/", request, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch ${request.status} appointments:`, error);
@@ -90,7 +98,11 @@ export const getAppointmentsByStatusAndPatient = async (
   request: AppointmentResponse
 ): Promise<AppointmentDTO[]> => {
   try {
-    const response = await api.post("/Appointment/patient/status/", request);
+    const response = await api.post("/Appointment/patient/status/", request, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch ${request.status} appointments:`, error);
@@ -100,7 +112,11 @@ export const getAppointmentsByStatusAndPatient = async (
 
 export const getAppointmentById = async (id: number): Promise<AppointmentDetailsDTO> => {
   try {
-    const response = await api.get(`/Appointment/${id}`);
+    const response = await api.get(`/Appointment/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     console.log("Appointment Information:", response.data);
     return response.data;
   } catch (error) {
@@ -113,7 +129,11 @@ export const getAppointmentsByPatient= async (
   request: AppointmentResponse
 ): Promise<AppointmentDTO[]> => {
   try {
-    const response = await api.post("/Appointment/patient", request);
+    const response = await api.post("/Appointment/patient", request, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Failed to fetch appointments:", error);
@@ -123,7 +143,11 @@ export const getAppointmentsByPatient= async (
 
 export const getAppointmentInformationById = async (id: number): Promise<AppointmentInformationDTO> => {
   try {
-    const response = await api.get(`/Appointment/${id}/info`);
+    const response = await api.get(`/Appointment/${id}/info`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     
     return response.data;
   } catch (error) {
@@ -134,7 +158,11 @@ export const getAppointmentInformationById = async (id: number): Promise<Appoint
 
 export const confirmAppointment = async (id: number): Promise<void> => {
   try {
-    await api.put(`/Appointment/${id}/confirm`);
+    await api.put(`/Appointment/${id}/confirm`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
     console.error("Failed to confirm appointment:", error);
     throw new Error("Could not confirm appointment");
@@ -143,7 +171,11 @@ export const confirmAppointment = async (id: number): Promise<void> => {
 
 export const cancelAppointment = async (id: number): Promise<void> => {
   try {
-    await api.put(`/Appointment/${id}/cancel`);
+    await api.put(`/Appointment/${id}/cancel`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     
   } catch (error) {
     console.error("Failed to cancel appointment:", error);
@@ -159,7 +191,7 @@ export async function updateAppointmentDetails(data: {
   console.log("Updating appointment details:", data);
   const res = await fetch(`${api_base_url}/Appointment/${data.id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json",Authorization: `Bearer ${token}` },
     body: JSON.stringify({
       diagnosis: data.diagnosis,
       suggestedTests: data.suggestedTests,
@@ -177,6 +209,9 @@ export async function uploadFileToServer(file: File): Promise<UploadResponse> {
   formData.append("file", file);
 
   const res = await fetch(`${api_base_url}/Appointment/upload/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     method: "POST",
     body: formData,
   });
@@ -201,6 +236,9 @@ export async function uploadMedicalReport(appointmentId: number, reportData: Rep
   formData.append("doctorId", reportData.doctorId.toString());
 
   const res = await fetch(`${api_base_url}/Appointment/add-report-Data/${appointmentId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     method: "POST",
     body: formData,
   });

@@ -1,12 +1,17 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 const api_base_url = process.env.NEXT_PUBLIC_API_Base_URL;
 // "https://localhost:7259/api";
+const token= Cookies.get("token")
 
 export const fetchNotifications = async (personId: number) => {
   try {
     const response = await axios.get(`${api_base_url}/Notifications`, {
       params: { personId },
       withCredentials: true,
+      headers: {
+          Authorization: `Bearer ${token}`,
+        },
     });
 
     return {
@@ -36,8 +41,11 @@ export const sendNotification = async (
           message,
           timeSent,
         },
-        { withCredentials: true }
-      );
+        { withCredentials: true, 
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
   
       return {
         success: true,
@@ -62,8 +70,11 @@ export const sendNotification = async (
           personId
           
         },
-        { withCredentials: true }
-      );
+        { withCredentials: true , 
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
   
       return {
         success: true,
